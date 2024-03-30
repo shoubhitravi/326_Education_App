@@ -1,0 +1,74 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js global dir --json
+
+PATH: 
+  C:\Program Files\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\QuickTime\QTSystem\;C:\Program Files\PuTTY\;C:\Program Files\nodejs\;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\Git\cmd;C:\Program Files\Git\bin\;C:\Ruby32-x64\bin;C:\Users\User\AppData\Local\Microsoft\WindowsApps;C:\Users\User\AppData\Roaming\npm;C:\Ruby32-x64\bin;C:\Users\User\AppData\Local\Yarn\bin;C:\Users\User\AppData\Local\GitHubDesktop\bin;C:\Users\User\AppData\Local\Programs\Microsoft VS Code\bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  18.14.2
+
+Platform: 
+  win32 x64
+
+Trace: 
+  SyntaxError: c:\SchoolClasses\CS 326 Web Programming\Final project\package.json: Unexpected token 
+   in JSON at position 891
+      at JSON.parse (<anonymous>)
+      at C:\Program Files (x86)\Yarn\lib\cli.js:1629:59
+      at Generator.next (<anonymous>)
+      at step (C:\Program Files (x86)\Yarn\lib\cli.js:310:30)
+      at C:\Program Files (x86)\Yarn\lib\cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "type": "module",
+    "license": "AGPL-version-3.0",
+    "private": false,
+    "engines": {
+      "node": ">= 14.0.0",
+      "npm": ">= 6.0.0"
+    },
+    "homepage": "",
+    "repository": {
+      "type": "git",
+      "url": ""
+    },
+    "bugs": "",
+    "keywords": [],
+    "author": {
+      "name": "Team 18",
+      "email": "",
+      "url": "https://github.com/shoubhitravi/326_Education_App"
+    },
+    "contributors": [
+      "Luke Taylor lhtaylor@umass.edu lhtaylor-umass",
+      "Shao Qin Tan shaoqintan@umass.edu shaoqintan",
+      "Shoubhit Ravi sravi@umass.edu shoubhitravi",
+      "Lucky Kovvuri hlkovvuri@gmail.com luckyy838"
+    ],
+    "scripts": {
+      "dev": "",
+      "test": "",
+      "milestone-01": "http-server src/docs/milestone-01 -p 3000 -c-1 -o -s",
+      "validate-html": "html-validate 'src/**/*.html",
+      "prettier": "prettier src —write”
+    },
+    "devDependencies": {
+      "html-validate": "^8.18.1",
+      "http-server": "^14.1.1",
+      "prettier": "^3.2.5"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
