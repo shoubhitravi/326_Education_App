@@ -34,17 +34,50 @@
 
     <main>
         <!-- Main content of the document -->
-        <article>
-            <!-- Primary content like a blog post or article -->
-        </article>
-
-        <section>
-            <!-- Related content or subsections -->
+        <section id = "overview">
+            <h2>Overview</h2>
+            This web-application attempts to solve the issue of mathematics engagement in our education system. It is widely known and criticized that the United States public school system falls behind its first world counterparts in mathematics and STEM educational attainment. We propose that a reason for this educational disparity may be that children in the US school system are not given opportunities to see interesting applications of mathematics. Herein lies the problem: students cannot observe/understand interesting applications of mathematics until they reach a certain level in their coursework (typically college level). However, many students will not reach this level. This is either because they are not motivated to learn mathematics and therefore do poorly in their courses, or because they simply choose a different field of study, entirely unaware of some of the more interesting and exciting aspects of math. Our team recognizes this catch-22, and with our application, we hope to provide an example of a solution to this problem. Our application will serve as an educational tool for all things data science, statistics, machine learning, etc. The main functionality of this application will be to allow high school/middle school students to dip their toes into the world of data science without the intensive math/computer science background typically demanded of data science practitioners. Students will be able to play around with different types of prediction methods ranging from linear regression to neural networks in a no code environment. The goal is to inspire a passion for data science and to develop in the students an appreciation for the subject matter that these applications are built on.
         </section>
+        <section id = "application-parts">
+            <h2>Application Parts</h2>
+            <h4>Database</h4>
+            <div>Our database is an essential component of our application, as it is what will hold the data necessary to allow users to train their models. We plan on using PouchDB to store ~3 lightweight datasets. Examples of these datasets could be the famous Boston Housing Dataset or Titanic Datasets. Users will be able to select a database and then select their desired method of prediction. The application will then query the database and receive the relevant training data.</div>
+            <h4>Model Creation</h4>
+            <div>Users will be able to select from a variety of prediction methods, including linear regression, decision trees, and neural networks. Then the user will be able to select hyperparameters and see how these choices of hyperparameters affect the accuracy of their model’s predictions.</div>
+            <h4>Leaderboard</h4>
+            <div>Users will be able to post their results to a leaderboard to explain to others how they improved the accuracy of their models. Students will be able to observe how other users chose their model, training data, hyperparameters, etc, and how this ultimately affects their prediction. Optionally, users may also explore training accuracy vs testing accuracy to explore concepts like overfitting. An educator may use this leaderboard to encourage students to experiment and gamify the learning experience. This space could serve as a space for students to thoughtfully reflect on their learning and experimentation, as well as the experimentation of others. For instance, students who spent more time learning about decision trees may have a potential to teach those who spent their time learning about neural networks and vice versa.</div>
+        </section>
+        <section id = "Data Requirements">
+            <h2>Data Requirements</h2>
+            <p> As a data science educational platform, data will play an essential role in our application’s success. We hope to have a diverse collection of databases to choose and interact with. Most importantly, we must be sure to preprocess our data correctly so that when our application interacts with our datasets, it does not result in an error.</p>
 
-        <aside>
-            <!-- Side content like ads, links to other posts, or author info -->
-        </aside>
+	        <p>First and foremost, we must have training data to use with our models. This includes simple and feature data and target data that can be used with all sorts of models and prediction methods. We aim to obtain datasets that are easy to interpret so that they are accessible to people of all backgrounds and ages. For instance, the Boston Housing Dataset contains features that are easily interpretable. It is easy to see how square footage can be useful in predicting the value of a house. This characteristic will be essential for the educational aims of this application.</p>
+
+	        <p>Beyond simplicity and interpretability, we must also consider size and computational resources when selecting our preloaded datasets. For instance, it is not feasible to allow the users to train on many petabytes of data at a time. For this reason, we will aim to keep the size of the datasets we use low enough to be efficient with PouchDB, but large enough to be able to create meaningful models.</p>
+
+	        <p>Our last data requirement is storing user interactions. In order to preserve the results on the leaderboard, we must store this information in a database. The JSON format will work perfectly for this situation as it will allow us to store specific information about an entry such as model type, hyperparameters, accuracy, and comments. This approach will allow users to easily sort through submissions based on accuracy, model type, etc. Ultimately, it is essential that our database is lightweight and efficient in storing and retrieving this information</p>
+        </section>
+        <section id = "wire-frames">
+            <h2>Wire Frames</h2>
+            <div>
+                This first wireframe depicts our welcome/home page. It provides some info on the website and what the subject matter is. It shows a navigation bar as well as a banner with the website name. 
+            </div>
+            <img src = "Images\Img 1.png">
+            <div>
+                The next wireframe depicts the leaderboard page. It shows the submissions in order of accuracy. It will allow users to view who submitted, what model they chose, and what hyperparameters they chose. When the user clicks on the submission, they will get more information on the submission. The user can sort based on what dataset is being used in the top left.
+            </div>
+            <img src = "Images\Img 2.png">
+            <div>This third wireframe shows the heart of the application. This page is where the user will create their model. They have the option to choose the type of model they want, what hyperparameters to use, and what features to use. When the user is done selecting and customizing their model, they are able to see a visualization of their training process that depicts the loss of their model over the time they train it. Then, if the user wants to share their results, they can hit the share button which will create a submission to the leaderboard of their model.</div>
+            <img src = "Images\Img 3.png">
+            <div>This final wireframe shows the datasets page which is the place where a user selects the dataset they want to work with. They can see information about the dataset such as size, number of features, and a description.</div>
+            <img src = "Images\Img 4.png">
+        </section>
+        <section id = "real-world">
+            <h2>Real-World Connection</h2>
+        </section>
+        <section id = "integrative-experience">
+            <h2>Integrative Experience</h2>
+        </section>
     </main>
 
     <footer>
