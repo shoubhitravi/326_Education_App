@@ -73,6 +73,9 @@ nav ul li a {
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
+ul {
+    margin-top: 30px; /* Adds space below each list item */
+  }
 
 /* Pseudo-Class Selector */
 a:hover {
@@ -117,9 +120,13 @@ footer {
 
 img {
     display: block;
-    max-width: 500px; /* or any specific size */
+    max-width: 400px; /* or any specific size */
     height: auto; /* maintains the aspect ratio */
     margin: auto; /* centers the image horizontally */
 }
 
+
+  li {
+    color: black; /* Change 'blue' to your desired color */
+  }
 
