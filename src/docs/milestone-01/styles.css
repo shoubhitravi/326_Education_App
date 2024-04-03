@@ -68,9 +68,11 @@ nav a {
 }
 
 .trigger {
-    color: blue;
+    color: black;
+    font-size: 25px;
     cursor: pointer;
     text-decoration: underline;
+    
 }
 
 .popup {
