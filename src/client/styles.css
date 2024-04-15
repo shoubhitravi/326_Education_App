@@ -1,0 +1,246 @@
+/* Basic Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+container {
+    max-width: 1100px;
+    margin: auto;
+    overflow: hidden;
+    padding: 0 20px;
+}
+
+/* Header styling */
+header {
+    background: #0056b3;
+    color: #ffffff;
+    padding-top: 30px;
+    min-height: 70px;
+    border-bottom: #0779e4 3px solid;
+}
+
+header h1, header h2 {
+    padding: 5px 0;
+}
+
+/* Navigation Bar */
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #333;
+    color: #fff;
+}
+
+nav a {
+    color: #fff;
+    padding: 10px 15px;
+    text-decoration: none;
+}
+
+.nav-links a:hover {
+    background-color: #575757;
+}
+
+/* ID Selector for Overview */
+#overview {
+    background-color: #e2e2e2;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Class Selector for navigation links */
+.nav-links {
+    list-style: none;
+    display: flex;
+}
+
+.trigger {
+    color: black;
+    font-size: 25px;
+    cursor: pointer;
+    text-decoration: underline;
+    
+}
+
+.popup {
+    display: none;
+    position: absolute;
+    border: 1px solid #ddd;
+    background-color: white;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0,2);
+    padding: 10px;
+    z-index: 1;
+}
+
+/* Nested-Tag / Sub-Element Selector */
+nav ul li a {
+    margin: 0 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+ul {
+    margin-top: 30px; /* Adds space below each list item */
+  }
+
+/* Pseudo-Class Selector */
+a:hover {
+    color: #ff5722;
+    transition: color 0.3s ease-in;
+}
+
+/* Additional Styling */
+section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #0056b3;
+}
+
+h4 {
+    margin-bottom: 10px;
+}
+
+p {
+    margin-bottom: 15px;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+/* Footer */
+footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+img {
+    display: block;
+    max-width: 400px; /* or any specific size */
+    height: auto; /* maintains the aspect ratio */
+    margin: auto; /* centers the image horizontally */
+}
+
+
+li {
+color: black; 
+}
+
+body {
+font-family: 'Arial', sans-serif;
+background-color: #f4f4f4;
+color: #333;
+line-height: 1.6;
+}
+
+.container {
+width: 90%;
+margin: auto;
+padding: 20px;
+background: #fff;
+border-radius: 5px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+font-size: 2.5rem;
+margin-bottom: 0;
+}
+
+.header p {
+font-style: italic;
+color: #888;
+}
+
+.model-selection, .hyperparameters, .feature-selection, .training-controls, .results, .share-results {
+margin-bottom: 20px;
+}
+
+h2 {
+border-bottom: 2px solid #eaeaea;
+padding-bottom: 5px;
+margin-bottom: 15px;
+}
+
+.model-buttons, .parameter, .checkbox-label, .training-controls, .share-results {
+display: flex;
+align-items: center;
+justify-content: start;
+}
+
+.model-buttons button,
+.training-controls button,
+.share-results button {
+margin-right: 10px;
+}
+
+.btn {
+display: inline-block;
+background: #333;
+color: #fff;
+padding: 10px 20px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background 0.2s;
+}
+
+.btn:hover {
+background: #555;
+}
+
+.parameter, .checkbox-label {
+margin-bottom: 10px;
+}
+
+.parameter label, .checkbox-label {
+flex: 1;
+}
+
+.parameter select, .checkbox-label input[type="checkbox"] {
+flex: 2;
+}
+
+.graph {
+width: 100%;
+height: 300px;
+margin-top: 20px;
+background: #f9f9f9;
+border: 1px solid #ddd;
+border-radius: 5px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+.model-buttons, .parameter, .checkbox-label, .training-controls, .share-results {
+    flex-direction: column;
+}
+.model-buttons button,
+.training-controls button,
+.share-results button {
+    margin-bottom: 10px;
+}
+}
+  
