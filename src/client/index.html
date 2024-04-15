@@ -26,7 +26,24 @@
     </nav>
 
     <div id="home" class="content">
-        <p>brbtb</p>
+      <section id="welcome">
+        <h2>Welcome</h2>
+        <p>Welcome to ML Squared, your hub for learning and growing in the world of data science. Dive into datasets, explore analyses, and compare your models on our leaderboard.</p>
+      </section>
+
+      <section id="data-science">
+        <h2>What is Data Science?</h2>
+        <p>Data Science is a multidisciplinary field that uses scientific methods, processes, algorithms, and systems to extract knowledge and insights from structured and unstructured data.</p>
+      </section>
+
+      <section id="care">
+        <h2>Why Should I Care?</h2>
+        <p>In our data-driven world, data science is crucial for converting data into knowledge, helping businesses and researchers make informed decisions.</p>
+      </section>
+
+      <footer>
+        <button onclick="window.location='start-journey.html';">Start Your Data Science Journey!</button>
+      </footer>
     </div>
     <div id="datasets" class="content" style="display: none;">
         <p>hkhkligkugk</p>
@@ -82,7 +99,58 @@
         </div>
     </div>
     <div id="leaderboard" class="content" style="display: none;">
-        <p>kgvkeugfgrklrv</p>
-    </div>
+      <select id="dataset-dropdown">
+        <option value="dataset1">Dataset I - Boston Housing</option>
+        <option value="dataset1">Dataset II - Mall Customers</option>
+        <option value="dataset1">Dataset III - Diabetes Dataset</option>
+    </select>
+
+    <!-- Leaderboard rankings -->
+    <div id="leaderboard">
+      <div class="leaderboard-title">
+          <div class="title rank">Rank</div>
+          <div class="title name">Name</div>
+          <div class="title model-type">Model Type</div>
+          <div class="title results">Result</div>
+          <div class="title link">Link</div>
+      </div>
+      <div class="leaderboard-entry">
+          <div class="rank">1.</div>
+          <div class="name">Luke</div>
+          <div class="model-type">Decision Tree</div>
+          <div class="results">100 average loss</div>
+          <div class="link">
+              <button onclick="location.href='model-link.html'">➡️</button>
+          </div>
+      </div>
+      <div class="leaderboard-entry">
+        <div class="rank">2.</div>
+        <div class="name">ShouRida</div>
+        <div class="model-type">Neural Network</div>
+        <div class="results">98.765% accuracy</div>
+        <div class="link">
+            <button onclick="location.href='model-link.html'">➡️</button>
+        </div>
+      </div>
+      <div class="leaderboard-entry">
+        <div class="rank">3.</div>
+        <div class="name">Shao</div>
+        <div class="model-type">Linear Regression</div>
+        <div class="results">100 average loss</div>
+        <div class="link">
+            <button onclick="location.href='model-link.html'">➡️</button>
+        </div>
+      </div>
+      <div class="leaderboard-entry">
+        <div class="rank">4.</div>
+        <div class="name">Lucky</div>
+        <div class="model-type">Decision trees</div>
+        <div class="results">100 average loss</div>
+        <div class="link">
+            <button onclick="location.href='model-link.html'">➡️</button>
+        </div>
+      </div>
+  </div>  
+  </div>
 </body>
 </html>
