@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML^2</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- JavaScript Files -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js" defer></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header id="vision">
+        <h1>ML^2</h1>
+    </header>
+
+    <!-- Navigation bar, logo, etc. -->
+    <nav>
+        <!-- Links to different sections/pages will be handled by JavaScript -->
+        <ul class="nav-links">
+            <a onclick="showSection('home')">Home</a>
+            <a onclick="showSection('datasets')">Datasets</a>
+            <a onclick="showSection('leaderboard')">Leaderboard</a>
+            <a onclick="showSection('training')">Training</a>
+        </ul>
+    </nav>
+
+    <div id="home" class="content">
+        <p>brbtb</p>
+    </div>
+    <div id="datasets" class="content" style="display: none;">
+        <p>hkhkligkugk</p>
+    </div>
+    <div id="training" class="container content" style="display: none;">
+        <div class="header">
+            <h1>ML Squared</h1>
+            <p>Boston Housing Dataset</p>
+        </div>
+
+        <div class="model-selection">
+            <h2>Model Type</h2>
+            <div class="model-buttons">
+                <button class="btn">Linear Regression</button>
+                <button class="btn">Decision Tree</button>
+                <button class="btn">Neural Network</button>
+            </div>
+        </div>
+
+        <div class="hyperparameters">
+            <h2>Hyperparameters</h2>
+            <div class="parameter">
+                <label for="criterion">Criterion</label>
+                <select id="criterion">
+                    <option value="gini">Gini</option>
+                    <option value="entropy">Entropy</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="feature-selection">
+            <h2>Select Features</h2>
+            <label class="checkbox-label">
+                <input type="checkbox" id="square_footage">
+                Square Footage
+            </label>
+        </div>
+
+        <div class="training-controls">
+            <button class="btn" id="start-training">Start Training</button>
+            <button class="btn" id="stop-training">Stop Training</button>
+        </div>
+
+        <div class="results">
+            <h2>Results:</h2>
+            <p>Test Accuracy: <span id="test-accuracy">87%</span></p>
+            <p>Loss: <span id="loss">-219.68</span></p>
+            <div id="plotly-graph" class="graph"></div>
+        </div>
+
+        <div class="share-results">
+            <button class="btn">Share Results</button>
+        </div>
+    </div>
+    <div id="leaderboard" class="content" style="display: none;">
+        <p>kgvkeugfgrklrv</p>
+    </div>
+</body>
+</html>

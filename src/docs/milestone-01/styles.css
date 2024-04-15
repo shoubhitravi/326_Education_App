@@ -99,6 +99,7 @@ ul {
 a:hover {
     color: #ff5722;
     transition: color 0.3s ease-in;
+    cursor: pointer;
 }
 
 /* Additional Styling */
