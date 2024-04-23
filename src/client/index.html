@@ -30,7 +30,12 @@
     <div id="home" class="content">
       <section id="welcome">
         <h2>Welcome</h2>
-        <p>Welcome to ML Squared, your hub for learning and growing in the world of data science. Dive into datasets, explore analyses, and compare your models on our leaderboard.</p>
+        <p>Welcome to MLSquared, your hub for learning---whether you are a beginner or a pro---in the growing world of data science. Dive into datasets, learn and explore analyses, and compare your models on our leaderboard.</p>
+      </section>
+
+      <section id="welcome">
+        <h2>Why MLSquared?</h2>
+        <p>Data science is complex and can be intimidating for those with no experience. MLSquared offer a free, high-quality, and user-friendly platform where you can learn how to model data as you do it, by playing around with our intuitive training interface. Best of all, you won't be alone-- join our community today!</p>
       </section>
 
       <section id="data-science">
@@ -40,22 +45,54 @@
 
       <section id="care">
         <h2>Why Should I Care?</h2>
-        <p>In our data-driven world, data science is crucial for converting data into knowledge, helping businesses and researchers make informed decisions.</p>
+        <p>In our data-driven world, data science is crucial for converting data into knowledge, helping businesses and researchers make informed decisions. </p>
       </section>
 
       <footer>
-        <button onclick="window.location='start-journey.html';">Start Your Data Science Journey!</button>
+        <button onclick="startJourney()">Start Your Data Science Journey!</button>
       </footer>
     </div>
     <div id="datasets" class="content" style="display: none;">
-        <p>hkhkligkugk</p>
+        <div class="header">
+            <h2>Datasets</h2>
+        </div>
+        <div class="datasets-container">
+            <div class="dataset-box" id="boston">
+                <h3>Boston Housing Dataset</h3>
+                <p>A dataset based on information collected by the U.S. Census about housing in Boston, MA.</p>
+                <span class="features">Features: 13</span><br>
+                <span class="size">Size: 506 entries</span><br>
+                <div class="button-container"> 
+                    <button onclick="startModeling('boston')">Start Modeling</button>
+                </div>
+            </div>
+            <div class="dataset-box" id="wine">
+                <h3>Wine Quality Dataset</h3>
+                <p>A dataset based on Portuguese "Vinho Verde" wine, describing various chemicals in the wine and their effect on its quality.</p>
+                <span class="features">Features: 11</span><br>
+                <span class="size">Size: 1599 entries</span><br>
+                <div class="button-container"> 
+                    <button onclick="startModeling('wine')">Start Modeling</button>
+                </div>           
+            </div>
+            <div class="dataset-box" id="titanic">
+                <h3>Titanic Dataset</h3>
+                <p>A dataset of Titanic passengers and their qualities, which may be correlated to their survival.</p>
+                <span class="features">Features: 10</span><br>
+                <span class="size">Size: 891 entries</span><br>
+                <div class="button-container"> 
+                    <button onclick="startModeling('titanic')">Start Modeling</button>
+                </div>
+            </div>
+        </div>
+        
     </div>
     <div id="training" class="container content" style="display: none;">
         <div class="header">
             <h1>ML Squared</h1>
             <div class="feature-selection">
                 <h2>Select Dataset</h2>
-                <select id="dataset-select" onchange="showFeatures()">
+                <select id="dataset-select" onchange="showFeatures(this.value)">
                     <option value="boston">Boston Housing Dataset</option>
                     <option value="wine">Wine Quality Dataset</option>
                     <option value="titanic">Titanic Dataset</option>
@@ -200,8 +237,8 @@
     <div id="leaderboard" class="content" style="display: none;">
       <select id="dataset-dropdown">
         <option value="dataset1">Dataset I - Boston Housing</option>
-        <option value="dataset1">Dataset II - Mall Customers</option>
-        <option value="dataset1">Dataset III - Diabetes Dataset</option>
+        <option value="dataset1">Dataset II - Wine Quality</option>
+        <option value="dataset1">Dataset III - Titanic Passengers</option>
     </select>
 
     <!-- Leaderboard rankings -->
