@@ -1,3 +1,5 @@
+
+
 // set different displays
 function set_up(){
     
@@ -10,6 +12,44 @@ function set_up(){
     const titanic_features = document.getElementById("titanic-features");
     wine_features.style.display = 'none';
     titanic_features.style.display = 'none';
+
+    populateInputsFromLocalStorage();
+}
+
+function populateInputsFromLocalStorage() {
+    const storedInputs = localStorage.getItem('inputs');
+    if (storedInputs) {
+        const inputs = JSON.parse(storedInputs);
+
+        // Populate dataset select
+        const datasetSelect = document.getElementById('dataset-select');
+        for (let i = 0; i < datasetSelect.options.length; i++) {
+            if (datasetSelect.options[i].textContent === inputs["dataset"]) {
+                datasetSelect.selectedIndex = i;
+                break;
+            }
+        }
+
+        // Populate hyperparameters
+        for (const inputId in inputs) {
+            if (inputs.hasOwnProperty(inputId) && inputId !== "dataset") {
+                const inputElement = document.getElementById(inputId);
+                if (inputElement) {
+                    inputElement.value = inputs[inputId];
+                }
+            }
+        }
+
+        // Populate selected features
+        for (const inputId in inputs) {
+            if (inputs.hasOwnProperty(inputId) && inputs[inputId] === true) {
+                const checkbox = document.getElementById(inputId);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            }
+        }
+    }
 }
 
 function showModel(modelType) {
@@ -92,8 +132,37 @@ function extractInputs() {
         }
     });
 
-    console.log(inputs);
+    // Store in local storage and PouchDB
+    localStorage.setItem('inputs', JSON.stringify(inputs));
+    storeInputsInDB(inputs);
+    logAllContents();
     return inputs;
+}
+
+// model submissions dataset
+const db = new PouchDB('model_db');
+
+function storeInputsInDB(inputs) {
+    const uniqueId = Date.now().toString();
+
+    const doc = { _id: uniqueId, ...inputs}
+    
+    return db.put(doc);
+}
+
+
+function logAllContents() {
+    // Retrieve all documents from the database
+    db.allDocs({ include_docs: true })
+        .then(function(result) {
+            // Iterate over each document and log its contents
+            result.rows.forEach(function(row) {
+                console.log(row.doc); // Log the document contents
+            });
+        })
+        .catch(function(error) {
+            console.error('Error retrieving documents from the database:', error);
+        });
 }
 
 
