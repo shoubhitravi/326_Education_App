@@ -52,6 +52,56 @@
         <button onclick="startJourney()">Start Your Data Science Journey!</button>
       </footer>
     </div>
+
+    <!-- link to submission data -->
+    <div id = "leaderboard links" class = "content" style = "display: none;">
+    
+    </div>
+    <!-- share results form to input model details and info -->
+    <div id = "results-form" class = "content" style="display: none;">
+        <div class="form-container">
+            <button id ="backTrainingButton" class = "back-btn" onclick="showSection('training')">Back</button>
+            <form action="#" method="GET">
+                <div class="form-group">
+                    <h2>Model Details:</h2>
+                    <p>Model Type: <span id="model-type-span"></span></p>
+                    <p>Test Accuracy: <span id="accuracy-span"></span></p>
+                    <p>Dataset: <span id ="dataset-span"></span></p>
+                    <p>Model Hyperparameters: <span id="hyperparameters-span"></span></p>
+
+                    
+                    <!-- <label for="dataset">Dataset:</label>
+                    <input type="text" id="dataset" name="dataset" readonly> -->
+                </div>
+                <!-- <div class="form-group">
+                    <label for="model-type">Model Type:</label>
+                    <input type="text" id="model-type" name="model-type" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="hyperparameters">Model Hyperparameters (JSON):</label>
+                    <input type="text" id="hyperparameters" name="hyperparameters" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="results">Results:</label>
+                    <input type="text" id="results" name="results" readonly>
+                </div> -->
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name-field" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="model-tuning">Please describe how you tuned your model to achieve these results:</label>
+                    <textarea id="model-tuning-field" name="model-tuning" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="model-improvement">What would you do to improve your model for next time?</label>
+                    <textarea id="model-improvement-field" name="model-improvement" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn" onclick="extractResultInfo();">Submit</button>
+            </form>
+        </div>
+    </div>
+
     <div id="datasets" class="content" style="display: none;">
         <div class="header">
             <h2>Datasets</h2>
@@ -231,7 +281,7 @@
         </div>
 
         <div class="share-results">
-            <button class="btn" onclick="extractInputs()">Share Results</button>
+            <button class="btn" onclick="extractInputs(); showSection('results-form'); displayModelData();">Share Results</button>
         </div>
     </div>
     <div id="leaderboard" class="content" style="display: none;">
@@ -286,7 +336,7 @@
             <button onclick="location.href='model-link.html'">➡️</button>
         </div>
       </div>
-  </div>  
+    </div>
   </div>
 </body>
 </html>
