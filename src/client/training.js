@@ -1,6 +1,9 @@
 
 
-// set different displays
+/**
+ * Sets up the initial display state of various divs and populates input fields based on
+ * previously saved data in local storage.
+ */
 function set_up(){
     
     const neural_div = document.getElementById("neural-hyperparameters");
@@ -16,6 +19,9 @@ function set_up(){
     populateInputsFromLocalStorage();
 }
 
+/**
+ * Populates input fields (hyperparameters, selected features) from values stored in local storage, if any.
+ */
 function populateInputsFromLocalStorage() {
     const storedInputs = localStorage.getItem('inputs');
     if (storedInputs) {
@@ -52,6 +58,11 @@ function populateInputsFromLocalStorage() {
     }
 }
 
+/**
+ * Displays the hyperparameter settings for the selected model.
+ *
+ * @param {string} modelType - The type of model to display hyperparameters for ('neural' or 'decision').
+ */
 function showModel(modelType) {
     // Hide all hyperparameter sections
     document.querySelectorAll('.hyperparameters').forEach(function(el) {
@@ -62,7 +73,9 @@ function showModel(modelType) {
     document.getElementById(modelType + '-hyperparameters').style.display = 'block';
 }
 
-
+/**
+ * Displays the features related to the selected dataset.
+ */
 function showFeatures() {
     // Hide all feature sets
     document.querySelectorAll('.feature-set').forEach(function(el) {
@@ -78,7 +91,10 @@ function showFeatures() {
 }
 
 
-
+/**
+ * Simulates the training process, updates the graph with random loss values, and displays
+ * random test accuracy and loss on the webpage.
+ */
 function startTraining() {
     // Simulate training with fake data
     let iterations = [];
@@ -108,6 +124,7 @@ function startTraining() {
     tAcc.textContent = (Math.random() * 100).toFixed(2) + "%";
     loss.textContent = (Math.random() * 1000).toFixed(2);
 }
+
 
 // Display model data (dataset, model type, test accuracy, hyperparameters) on share page form
 function displayModelData(){
@@ -166,6 +183,14 @@ function displayModelData(){
         hyperparametersSpan.textContent = JSON.stringify(hyperparameters);
     }
 }
+
+
+/**
+ * Extracts inputs from the user form, including selected dataset, hyperparameters, and features,
+ * stores them in local storage and a PouchDB database, and logs them to the console.
+ *
+ * @returns {Object} The inputs extracted from the form elements.
+ */
 
 function extractInputs() {
     const inputs = {};
@@ -247,6 +272,12 @@ function extractResultInfo(){
 // model submissions dataset
 const db = new PouchDB('model_db');
 
+/**
+ * Stores the provided input data in a PouchDB database with a unique timestamp as the ID.
+ *
+ * @param {Object} inputs - The inputs to store in the database.
+ * @returns {Promise} A promise that resolves with the response from the database operation.
+ */
 function storeInputsInDB(inputs) {
     const uniqueId = Date.now().toString();
 
@@ -255,7 +286,9 @@ function storeInputsInDB(inputs) {
     return db.put(doc);
 }
 
-
+/**
+ * Logs all contents of the PouchDB database to the console.
+ */
 function logAllContents() {
     // Retrieve all documents from the database
     db.allDocs({ include_docs: true })

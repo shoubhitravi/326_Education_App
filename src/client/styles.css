@@ -27,6 +27,7 @@ header {
     padding-top: 30px;
     min-height: 70px;
     border-bottom: #0779e4 3px solid;
+    font-family: "Jersey 10", sans-serif;
 }
 
 header h1, header h2 {
@@ -483,6 +484,7 @@ footer button:hover {
     background-color: #0056b3;
 }
 
+
 .form-container {
     background-color: #ffffff; 
     padding: 20px;
@@ -527,3 +529,11 @@ label {
     cursor: pointer;
     transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
+=======
+.jersey-10-regular {
+    font-family: "Jersey 10", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+
