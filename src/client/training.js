@@ -238,7 +238,6 @@ function extractInputs() {
 
     // Store in local storage and PouchDB
     localStorage.setItem('inputs', JSON.stringify(inputs));
-
     // clear database script
     // db.destroy().then(function() {
     //     console.log("database cleared successfully");
@@ -252,9 +251,9 @@ function extractInputs() {
     return inputs;
 }
 
+
 function extractResultInfo() {
     const inputs = JSON.parse(localStorage.getItem('inputs'));
-
     // console.log(inputs);
     // extract name
     const name = document.getElementById("name-field").value;
@@ -278,7 +277,7 @@ function extractResultInfo() {
 
 // model submissions dataset
 const db = new PouchDB('model_db');
-
+console.log(JSON.parse(localStorage.getItem('inputs')))
 /**
  * Stores the provided input data in a PouchDB database with a unique timestamp as the ID.
  *
@@ -293,16 +292,50 @@ function storeInputsInDB(inputs) {
     return db.put(doc);
 }
 
+function clearDatabase() {
+    db.allDocs()
+        .then(result => {
+            return Promise.all(result.rows.map(row => {
+                return db.remove(row.id, row.value.rev);
+            }));
+        })
+        .then(() => {
+            console.log('All documents successfully deleted');
+        })
+        .catch(err => {
+            console.error('Error deleting documents', err);
+        });
+}
+
+function sortResultsByAccuracy(results) {
+    results.sort(function(a, b) {
+        // Ensure both values are treated as numbers
+        return parseFloat(b.doc.testAccuracy) - parseFloat(a.doc.testAccuracy); // Sorting in descending order
+    });
+}
 /**
  * Logs all contents of the PouchDB database to the console.
  */
-function logAllContents() {
+function populateLeaderboard() {
     // Retrieve all documents from the database
     db.allDocs({ include_docs: true })
         .then(function (result) {
             // Iterate over each document and log its contents
-            result.rows.forEach(function (row) {
-                console.log(row.doc); // Log the document contents
+            sortResultsByAccuracy(result.rows);
+            const leaderboardContainer = document.getElementById('leaderboard');
+            result.rows.forEach(function (row, index) {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.classList.add('leaderboard-entry');          
+                    entryDiv.innerHTML = `
+                        <div class="rank">${index + 1}</div>
+                        <div class="name">${row.doc.name}</div>
+                        <div class="model-type">${row.doc.modelType}</div>
+                        <div class="results">${row.doc.testAccuracy}</div>
+                        <div class="link">
+                            <button onclick="extractInputs(); showSection('results-form-public'); displayModelData();">➡️</button>
+                        </div>
+                    `;            
+                    leaderboardContainer.appendChild(entryDiv);
             });
         })
         .catch(function (error) {
@@ -315,4 +348,4 @@ function logAllContents() {
 window.onload = set_up;
 
 // db content which is logged is unavaiable after page reload (like when form is submitted)
-window.addEventListener('load', logAllContents);
+window.addEventListener('load', populateLeaderboard);
