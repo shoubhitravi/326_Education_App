@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +13,9 @@
     <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.3.0/dist/pouchdb.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">  
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <header id="vision">
         <h1>ML^2</h1>
@@ -31,48 +33,55 @@
     </nav>
 
     <div id="home" class="content">
-      <section id="welcome">
-        <h2>Welcome</h2>
-        <p>Welcome to MLSquared, your hub for learning---whether you are a beginner or a pro---in the growing world of data science. Dive into datasets, learn and explore analyses, and compare your models on our leaderboard.</p>
-      </section>
+        <section id="welcome">
+            <h2>Welcome</h2>
+            <p>Welcome to MLSquared, your hub for learning---whether you are a beginner or a pro---in the growing world
+                of data science. Dive into datasets, learn and explore analyses, and compare your models on our
+                leaderboard.</p>
+        </section>
 
-      <section id="welcome">
-        <h2>Why MLSquared?</h2>
-        <p>Data science is complex and can be intimidating for those with no experience. MLSquared offer a free, high-quality, and user-friendly platform where you can learn how to model data as you do it, by playing around with our intuitive training interface. Best of all, you won't be alone-- join our community today!</p>
-      </section>
+        <section id="welcome">
+            <h2>Why MLSquared?</h2>
+            <p>Data science is complex and can be intimidating for those with no experience. MLSquared offer a free,
+                high-quality, and user-friendly platform where you can learn how to model data as you do it, by playing
+                around with our intuitive training interface. Best of all, you won't be alone-- join our community
+                today!</p>
+        </section>
 
-      <section id="data-science">
-        <h2>What is Data Science?</h2>
-        <p>Data Science is a multidisciplinary field that uses scientific methods, processes, algorithms, and systems to extract knowledge and insights from structured and unstructured data.</p>
-      </section>
+        <section id="data-science">
+            <h2>What is Data Science?</h2>
+            <p>Data Science is a multidisciplinary field that uses scientific methods, processes, algorithms, and
+                systems to extract knowledge and insights from structured and unstructured data.</p>
+        </section>
 
-      <section id="care">
-        <h2>Why Should I Care?</h2>
-        <p>In our data-driven world, data science is crucial for converting data into knowledge, helping businesses and researchers make informed decisions. </p>
-      </section>
+        <section id="care">
+            <h2>Why Should I Care?</h2>
+            <p>In our data-driven world, data science is crucial for converting data into knowledge, helping businesses
+                and researchers make informed decisions. </p>
+        </section>
 
-      <footer>
-        <button onclick="startJourney()">Start Your Data Science Journey!</button>
-      </footer>
+        <footer>
+            <button onclick="startJourney()">Start Your Data Science Journey!</button>
+        </footer>
     </div>
 
     <!-- link to submission data -->
-    <div id = "leaderboard links" class = "content" style = "display: none;">
-    
+    <div id="leaderboard links" class="content" style="display: none;">
+
     </div>
     <!-- share results form to input model details and info -->
-    <div id = "results-form" class = "content" style="display: none;">
+    <div id="results-form" class="content" style="display: none;">
         <div class="form-container">
-            <button id ="backTrainingButton" class = "back-btn" onclick="showSection('training')">Back</button>
+            <button id="backTrainingButton" class="back-btn" onclick="showSection('training')">Back</button>
             <form action="#" method="GET">
                 <div class="form-group">
                     <h2>Model Details:</h2>
                     <p>Model Type: <span id="model-type-span"></span></p>
                     <p>Test Accuracy: <span id="accuracy-span"></span></p>
-                    <p>Dataset: <span id ="dataset-span"></span></p>
+                    <p>Dataset: <span id="dataset-span"></span></p>
                     <p>Model Hyperparameters: <span id="hyperparameters-span"></span></p>
 
-                    
+
                     <!-- <label for="dataset">Dataset:</label>
                     <input type="text" id="dataset" name="dataset" readonly> -->
                 </div>
@@ -105,6 +114,35 @@
         </div>
     </div>
 
+    <div id="results-display" class="content" style="display: none;">
+        <div class="form-container">
+            <button id="backLeaderboardButton" class="back-btn" onclick="showSection('leaderboard')">Back</button>
+            <form action="#" method="GET">
+                <div class="form-group">
+                    <h2>Model Details:</h2>
+                    <p>Model Type: <span id="model-type-span"></span></p>
+                    <p>Test Accuracy: <span id="accuracy-span"></span></p>
+                    <p>Dataset: <span id="dataset-span"></span></p>
+                    <p>Model Hyperparameters: <span id="hyperparameters-span"></span></p>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name-field" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="model-tuning">Please describe how you tuned your model to achieve these
+                        results:</label>
+                    <textarea id="model-tuning-field" name="model-tuning" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="model-improvement">What would you do to improve your model for next time?</label>
+                    <textarea id="model-improvement-field" name="model-improvement" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn" onclick="extractResultInfo();">Submit</button>
+            </form>
+        </div>
+    </div>
+
     <div id="datasets" class="content" style="display: none;">
         <div class="header">
             <h2>Datasets</h2>
@@ -115,30 +153,31 @@
                 <p>A dataset based on information collected by the U.S. Census about housing in Boston, MA.</p>
                 <span class="features">Features: 13</span><br>
                 <span class="size">Size: 506 entries</span><br>
-                <div class="button-container"> 
+                <div class="button-container">
                     <button onclick="startModeling('boston')">Start Modeling</button>
                 </div>
             </div>
             <div class="dataset-box" id="wine">
                 <h3>Wine Quality Dataset</h3>
-                <p>A dataset based on Portuguese "Vinho Verde" wine, describing various chemicals in the wine and their effect on its quality.</p>
+                <p>A dataset based on Portuguese "Vinho Verde" wine, describing various chemicals in the wine and their
+                    effect on its quality.</p>
                 <span class="features">Features: 11</span><br>
                 <span class="size">Size: 1599 entries</span><br>
-                <div class="button-container"> 
+                <div class="button-container">
                     <button onclick="startModeling('wine')">Start Modeling</button>
-                </div>           
+                </div>
             </div>
             <div class="dataset-box" id="titanic">
                 <h3>Titanic Dataset</h3>
                 <p>A dataset of Titanic passengers and their qualities, which may be correlated to their survival.</p>
                 <span class="features">Features: 10</span><br>
                 <span class="size">Size: 891 entries</span><br>
-                <div class="button-container"> 
+                <div class="button-container">
                     <button onclick="startModeling('titanic')">Start Modeling</button>
                 </div>
             </div>
         </div>
-        
+
     </div>
     <div id="training" class="container content" style="display: none;">
         <div class="header">
@@ -241,7 +280,7 @@
                 <label for="feature-zn">Proportion of residential land zoned for lots over 25,000 sq.ft.</label>
             </div>
         </div>
-        
+
         <div id="wine-features" class="feature-set hidden">
             <h2>Wine Quality Dataset Features</h2>
             <h3>Select Features</h3>
@@ -255,7 +294,7 @@
                 <label for="feature-volatile-acidity">Volatile acidity</label>
             </div>
         </div>
-        
+
         <div id="titanic-features" class="feature-set hidden">
             <h2>Titanic Dataset Features</h2>
             <h3>Select Features</h3>
@@ -271,7 +310,7 @@
         </div>
 
         <div class="training-controls">
-            <button class="btn" id="start-training" onclick="startTraining()">Start Training</button> 
+            <button class="btn" id="start-training" onclick="startTraining()">Start Training</button>
             <!-- button connects to fake function that generates a random graph, must modify in future -->
             <button class="btn" id="stop-training">Stop Training</button>
         </div>
@@ -284,62 +323,27 @@
         </div>
 
         <div class="share-results">
-            <button class="btn" onclick="extractInputs(); showSection('results-form'); displayModelData();">Share Results</button>
+            <button class="btn" onclick="extractInputs(); showSection('results-form'); displayModelData();">Share
+                Results</button>
         </div>
     </div>
     <div id="leaderboard" class="content" style="display: none;">
-      <select id="dataset-dropdown">
-        <option value="dataset1">Dataset I - Boston Housing</option>
-        <option value="dataset1">Dataset II - Wine Quality</option>
-        <option value="dataset1">Dataset III - Titanic Passengers</option>
-    </select>
-
-    <!-- Leaderboard rankings -->
+        <select id="dataset-dropdown">
+          <option value="dataset1">Dataset I - Boston Housing</option>
+          <option value="dataset1">Dataset II - Wine Quality</option>
+          <option value="dataset1">Dataset III - Titanic Passengers</option>
+      </select>  
+        <!-- Leaderboard rankings -->
     <div id="leaderboard">
-      <div class="leaderboard-title">
-          <div class="title rank">Rank</div>
-          <div class="title name">Name</div>
-          <div class="title model-type">Model Type</div>
-          <div class="title results">Result</div>
-          <div class="title link">Link</div>
-      </div>
-      <div class="leaderboard-entry">
-          <div class="rank">1.</div>
-          <div class="name">Luke</div>
-          <div class="model-type">Decision Tree</div>
-          <div class="results">100 average loss</div>
-          <div class="link">
-              <button onclick="location.href='model-link.html'">➡️</button>
-          </div>
-      </div>
-      <div class="leaderboard-entry">
-        <div class="rank">2.</div>
-        <div class="name">ShouRida</div>
-        <div class="model-type">Neural Network</div>
-        <div class="results">98.765% accuracy</div>
-        <div class="link">
-            <button onclick="location.href='model-link.html'">➡️</button>
+        <div class="leaderboard-title">
+            <div class="title rank">Rank</div>
+            <div class="title name">Name</div>
+            <div class="title model-type">Model Type</div>
+            <div class="title results">Result</div>
+            <div class="title link" onclick="showSection('results-display')">Link</div>
         </div>
-      </div>
-      <div class="leaderboard-entry">
-        <div class="rank">3.</div>
-        <div class="name">Shao</div>
-        <div class="model-type">Linear Regression</div>
-        <div class="results">100 average loss</div>
-        <div class="link">
-            <button onclick="location.href='model-link.html'">➡️</button>
-        </div>
-      </div>
-      <div class="leaderboard-entry">
-        <div class="rank">4.</div>
-        <div class="name">Lucky</div>
-        <div class="model-type">Decision trees</div>
-        <div class="results">100 average loss</div>
-        <div class="link">
-            <button onclick="location.href='model-link.html'">➡️</button>
-        </div>
-      </div>
+    </div>       
     </div>
-  </div>
 </body>
+
 </html>
