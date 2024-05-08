@@ -4,8 +4,8 @@
  * Sets up the initial display state of various divs and populates input fields based on
  * previously saved data in local storage.
  */
-function set_up(){
-    
+function set_up() {
+
     const neural_div = document.getElementById("neural-hyperparameters");
     const decision_div = document.getElementById("decision-hyperparameters");
     neural_div.style.display = 'none';
@@ -65,7 +65,7 @@ function populateInputsFromLocalStorage() {
  */
 function showModel(modelType) {
     // Hide all hyperparameter sections
-    document.querySelectorAll('.hyperparameters').forEach(function(el) {
+    document.querySelectorAll('.hyperparameters').forEach(function (el) {
         el.style.display = 'none';
     });
 
@@ -78,7 +78,7 @@ function showModel(modelType) {
  */
 function showFeatures() {
     // Hide all feature sets
-    document.querySelectorAll('.feature-set').forEach(function(el) {
+    document.querySelectorAll('.feature-set').forEach(function (el) {
         el.style.display = 'none';
     });
 
@@ -96,38 +96,45 @@ function showFeatures() {
  * random test accuracy and loss on the webpage.
  */
 function startTraining() {
-    // Simulate training with fake data
-    let iterations = [];
-    let lossValues = [];
-
-    const tAcc = document.getElementById("test-accuracy");
+    
     const loss = document.getElementById("loss");
 
-    const maxIterations = 100;
-    for (let i = 1; i <= maxIterations; i++) {
-        iterations.push(i);
-        lossValues.push(Math.random() * 100); // Random value for demonstration
-    }
+    const inputs = extractHyperparameters();
 
-    // Update the Plotly graph
-    Plotly.newPlot('plotly-graph', [{
-        x: iterations,
-        y: lossValues,
-        type: 'scatter',
-        mode: 'lines',
-        name: 'Loss over Time'
-    }], {
-        title: 'Loss over Time',
-        xaxis: { title: 'Iterations' },
-        yaxis: { title: 'Loss' }
+    fetch('http://localhost:3000/create_model', { // Replace with your backend server URL
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(inputs)
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data); // Handle the response from the server
+        data_JSON = JSON.parse(data);
+        // Update the Plotly graph
+        Plotly.newPlot('plotly-graph', [{
+            x: data_JSON['losses'],
+            y: data_JSON['losses'].map((_, index) => index + 1),
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Loss over Time'
+        }], {
+            title: 'Loss over Time',
+            xaxis: { title: 'Iterations' },
+            yaxis: { title: 'Loss' },
+            height: 500
+        });
+        loss.textContent = data_JSON['mse'].toFixed(2);;
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
-    tAcc.textContent = (Math.random() * 100).toFixed(2) + "%";
-    loss.textContent = (Math.random() * 1000).toFixed(2);
 }
 
 
 // Display model data (dataset, model type, test accuracy, hyperparameters) on share page form
-function displayModelData(){
+function displayModelData() {
     const inputs = JSON.parse(localStorage.getItem('inputs'));
     const datasetSpan = document.getElementById("dataset-span");
     const modelTypeSpan = document.getElementById("model-type-span");
@@ -166,8 +173,8 @@ function displayModelData(){
 
     */
     const hyperparameters = {};
-    for(const key in inputs){
-        if(key === "dataset" || key === "modelType" || key === "testAccuracy"){
+    for (const key in inputs) {
+        if (key === "dataset" || key === "modelType" || key === "testAccuracy") {
             continue;
         }
         else {
@@ -176,11 +183,18 @@ function displayModelData(){
     }
 
     // console.log(JSON.stringify(hyperparameters));
-    if (Object.keys(hyperparameters).length === 0){
+    if (Object.keys(hyperparameters).length === 0) {
         hyperparameters.textContent = "None specified"
     }
     else {
-        hyperparametersSpan.textContent = JSON.stringify(hyperparameters);
+        let hyperparametersHtml = '<ul>';
+        for (const [key, value] of Object.entries(hyperparameters)) {
+            hyperparametersHtml += `<li>${key}: ${value}</li>`;
+        }
+        hyperparametersHtml += '</ul>';
+
+        // Insert the HTML into the DOM
+        hyperparametersSpan.innerHTML = hyperparametersHtml;
     }
 }
 
@@ -192,6 +206,31 @@ function displayModelData(){
  * @returns {Object} The inputs extracted from the form elements.
  */
 
+
+function extractHyperparameters(){
+    const hyperparameters = {}
+
+    const datasetSelect = document.getElementById('dataset-select');
+    const selectedText = datasetSelect.options[datasetSelect.selectedIndex].textContent;
+    hyperparameters["dataset"] = selectedText;
+    
+    // Extract hyperparameters
+    document.querySelectorAll('.hyperparameters input, .hyperparameters select').forEach(function (input) {
+        if (input.offsetParent !== null) { // Check if the input is visible
+            hyperparameters[input.id] = input.value;
+        }
+    });
+
+    // Extract model type
+    document.querySelectorAll('.hyperparameters').forEach(function (input) {
+        if (input.offsetParent !== null) { // Check if the input is visible
+            hyperparameters["modelType"] = input.querySelector('h2').textContent.split(" ").slice(0, 2).join(" ");
+        }
+    });
+    console.log(hyperparameters);
+    return hyperparameters;
+}
+
 function extractInputs() {
     const inputs = {};
 
@@ -201,29 +240,29 @@ function extractInputs() {
     inputs["dataset"] = selectedText;
 
     // Extract hyperparameters
-    document.querySelectorAll('.hyperparameters input, .hyperparameters select').forEach(function(input) {
+    document.querySelectorAll('.hyperparameters input, .hyperparameters select').forEach(function (input) {
         if (input.offsetParent !== null) { // Check if the input is visible
             inputs[input.id] = input.value;
         }
     });
 
     // Extract selected features
-    document.querySelectorAll('.feature-set input[type="checkbox"]').forEach(function(checkbox) {
+    document.querySelectorAll('.feature-set input[type="checkbox"]').forEach(function (checkbox) {
         if (checkbox.offsetParent !== null && checkbox.checked) { // Check if the checkbox is visible and checked
             inputs[checkbox.id] = true;
         }
     });
 
     // Extract model type
-    document.querySelectorAll('.hyperparameters').forEach(function(input) {
+    document.querySelectorAll('.hyperparameters').forEach(function (input) {
         if (input.offsetParent !== null) { // Check if the input is visible
             inputs["modelType"] = input.querySelector('h2').textContent.split(" ").slice(0, 2).join(" ");
         }
     });
 
     // Extract Test Accuracy
-    document.querySelectorAll(".results").forEach(function(input) {
-        if(input.offsetParent !== null){
+    document.querySelectorAll(".results").forEach(function (input) {
+        if (input.offsetParent !== null) {
             inputs["testAccuracy"] = input.querySelector("#test-accuracy").textContent;
         }
     }
@@ -245,7 +284,7 @@ function extractInputs() {
     return inputs;
 }
 
-function extractResultInfo(){
+function extractResultInfo() {
     const inputs = JSON.parse(localStorage.getItem('inputs'));
 
     // console.log(inputs);
@@ -281,8 +320,8 @@ const db = new PouchDB('model_db');
 function storeInputsInDB(inputs) {
     const uniqueId = Date.now().toString();
 
-    const doc = { _id: uniqueId, ...inputs}
-    
+    const doc = { _id: uniqueId, ...inputs }
+
     return db.put(doc);
 }
 
@@ -292,13 +331,13 @@ function storeInputsInDB(inputs) {
 function logAllContents() {
     // Retrieve all documents from the database
     db.allDocs({ include_docs: true })
-        .then(function(result) {
+        .then(function (result) {
             // Iterate over each document and log its contents
-            result.rows.forEach(function(row) {
+            result.rows.forEach(function (row) {
                 console.log(row.doc); // Log the document contents
             });
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error('Error retrieving documents from the database:', error);
         });
 }

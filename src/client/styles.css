@@ -161,6 +161,7 @@ line-height: 1.6;
 width: 90%;
 margin: auto;
 padding: 20px;
+padding-left: 0;
 background: #fff;
 border-radius: 5px;
 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -169,6 +170,12 @@ box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 .header h1 {
 font-size: 2.5rem;
 margin-bottom: 0;
+}
+
+.feature-set h2,
+.feature-set h3 {
+    margin: 0; /* Reset margins */
+    padding: 0; /* Reset padding */
 }
 
 .header p {
@@ -186,10 +193,27 @@ padding-bottom: 5px;
 margin-bottom: 15px;
 }
 
-.model-buttons, .parameter, .checkbox-label, .training-controls, .share-results {
+.model-buttons, .parameter, .training-controls, .share-results {
 display: flex;
 align-items: center;
 justify-content: start;
+}
+
+.checkbox-label{
+display: flex;
+align-items: center;
+justify-content: flex-start;
+margin-left: 0; /* Ensure no margin is pushing content to the right */
+padding-left: 0;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0; /* Reset margin for checkboxes */
+}
+
+.feature-set {
+    margin: 0; /* Reset margin */
+    padding: 0; /* Reset padding */
 }
 
 .model-buttons button,
@@ -340,7 +364,9 @@ nav {
     display: block;
     margin-top: 20px;
     padding: 20px;
+    padding-left: 0; /* Remove padding on the left */
     background-color: #f4f4f4;
+    text-align: left; /* Align text to the left */
 }
 
 /* Homepage content sections */
@@ -536,4 +562,6 @@ label {
     font-style: normal;
   }
   
-
+#plotly-graph {
+    height: 500px;
+}
