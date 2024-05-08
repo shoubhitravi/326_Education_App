@@ -96,33 +96,40 @@ function showFeatures() {
  * random test accuracy and loss on the webpage.
  */
 function startTraining() {
-    // Simulate training with fake data
-    let iterations = [];
-    let lossValues = [];
-
-    const tAcc = document.getElementById("test-accuracy");
+    
     const loss = document.getElementById("loss");
 
-    const maxIterations = 100;
-    for (let i = 1; i <= maxIterations; i++) {
-        iterations.push(i);
-        lossValues.push(Math.random() * 100); // Random value for demonstration
-    }
+    const inputs = extractHyperparameters();
 
-    // Update the Plotly graph
-    Plotly.newPlot('plotly-graph', [{
-        x: iterations,
-        y: lossValues,
-        type: 'scatter',
-        mode: 'lines',
-        name: 'Loss over Time'
-    }], {
-        title: 'Loss over Time',
-        xaxis: { title: 'Iterations' },
-        yaxis: { title: 'Loss' }
+    fetch('http://localhost:3000/create_model', { // Replace with your backend server URL
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(inputs)
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data); // Handle the response from the server
+        data_JSON = JSON.parse(data);
+        // Update the Plotly graph
+        Plotly.newPlot('plotly-graph', [{
+            x: data_JSON['losses'],
+            y: data_JSON['losses'].map((_, index) => index + 1),
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Loss over Time'
+        }], {
+            title: 'Loss over Time',
+            xaxis: { title: 'Iterations' },
+            yaxis: { title: 'Loss' },
+            height: 500
+        });
+        loss.textContent = data_JSON['mse'].toFixed(2);;
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
-    tAcc.textContent = (Math.random() * 100).toFixed(2) + "%";
-    loss.textContent = (Math.random() * 1000).toFixed(2);
 }
 
 
@@ -198,6 +205,31 @@ function displayModelData() {
  *
  * @returns {Object} The inputs extracted from the form elements.
  */
+
+
+function extractHyperparameters(){
+    const hyperparameters = {}
+
+    const datasetSelect = document.getElementById('dataset-select');
+    const selectedText = datasetSelect.options[datasetSelect.selectedIndex].textContent;
+    hyperparameters["dataset"] = selectedText;
+    
+    // Extract hyperparameters
+    document.querySelectorAll('.hyperparameters input, .hyperparameters select').forEach(function (input) {
+        if (input.offsetParent !== null) { // Check if the input is visible
+            hyperparameters[input.id] = input.value;
+        }
+    });
+
+    // Extract model type
+    document.querySelectorAll('.hyperparameters').forEach(function (input) {
+        if (input.offsetParent !== null) { // Check if the input is visible
+            hyperparameters["modelType"] = input.querySelector('h2').textContent.split(" ").slice(0, 2).join(" ");
+        }
+    });
+    console.log(hyperparameters);
+    return hyperparameters;
+}
 
 function extractInputs() {
     const inputs = {};
