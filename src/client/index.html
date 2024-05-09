@@ -117,31 +117,13 @@
     <div id="results-display" class="content" style="display: none;">
         <div class="form-container">
             <button id="backLeaderboardButton" class="back-btn" onclick="showSection('leaderboard')">Back</button>
-            <form action="#" method="GET">
-                <div class="form-group">
-                    <h2>Model Details:</h2>
-                    <p>Model Type: <span id="model-type-span"></span></p>
-                    <p>Test Accuracy: <span id="accuracy-span"></span></p>
-                    <p>Dataset: <span id="dataset-span"></span></p>
-                    <p>Model Hyperparameters: <span id="hyperparameters-span"></span></p>
-                </div>
-                <div class="form-group">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name-field" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="model-tuning">Please describe how you tuned your model to achieve these
-                        results:</label>
-                    <textarea id="model-tuning-field" name="model-tuning" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="model-improvement">What would you do to improve your model for next time?</label>
-                    <textarea id="model-improvement-field" name="model-improvement" required></textarea>
-                </div>
-                <button type="submit" class="submit-btn" onclick="extractResultInfo();">Submit</button>
-            </form>
+            <!-- Results container where each result entry is dynamically created and appended -->
+            <div id="results-container">
+                <!-- Dynamically append each model result here -->
+            </div>
         </div>
     </div>
+    
 
     <div id="datasets" class="content" style="display: none;">
         <div class="header">
@@ -340,7 +322,7 @@
             <div class="title name">Name</div>
             <div class="title model-type">Model Type</div>
             <div class="title results">Result</div>
-            <div class="title link" onclick="showSection('results-display')">Link</div>
+            <div class="title link">Link</div>
         </div>
     </div>       
     </div>

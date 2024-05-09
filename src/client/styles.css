@@ -561,6 +561,53 @@ label {
     font-weight: 400;
     font-style: normal;
   }
+
+/* General styles for the results container */
+#results-container {
+    margin: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Style for each detail entry */
+.result-detail {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #fff;
+    border-left: 5px solid #007BFF; /* Change the color as needed */
+    font-family: Arial, sans-serif;
+}
+
+/* Style for the heading of each detail */
+.result-detail strong {
+    color: #333;
+    font-size: 16px;
+}
+
+/* Style for the value of each detail */
+.result-detail span {
+    display: block;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Button styles */
+.back-btn {
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.back-btn:hover {
+    background-color: #0056b3;
+}
+
   
 #plotly-graph {
     height: 500px;
