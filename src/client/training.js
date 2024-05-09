@@ -100,6 +100,7 @@ function startTraining() {
     const loss = document.getElementById("loss");
 
     const inputs = extractHyperparameters();
+    const modelType = inputs["modelType"];
 
     fetch('http://localhost:3000/create_model', { // Replace with your backend server URL
         method: 'POST',
@@ -110,22 +111,72 @@ function startTraining() {
     })
     .then(response => response.text())
     .then(data => {
+        
         console.log(data); // Handle the response from the server
         data_JSON = JSON.parse(data);
-        // Update the Plotly graph
-        Plotly.newPlot('plotly-graph', [{
-            x: data_JSON['losses'],
-            y: data_JSON['losses'].map((_, index) => index + 1),
-            type: 'scatter',
-            mode: 'lines',
-            name: 'Loss over Time'
-        }], {
-            title: 'Loss over Time',
-            xaxis: { title: 'Iterations' },
-            yaxis: { title: 'Loss' },
-            height: 500
-        });
-        loss.textContent = data_JSON['mse'].toFixed(2);;
+            // Update the Plotly graph
+        console.log(modelType);
+        if (modelType !== "Decision Tree"){
+            Plotly.newPlot('plotly-graph', [{
+                x: data_JSON['losses'],
+                y: data_JSON['losses'].map((_, index) => index + 1),
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Loss over Time'
+            }], {
+                title: 'Loss over Time',
+                xaxis: { title: 'Iterations' },
+                yaxis: { title: 'Loss' },
+                height: 500
+            });
+            
+            
+        }
+        else {
+            // Assuming train_scores and val_scores are available as arrays
+
+            const train_scores = data_JSON['train_scores'];
+            const val_scores = data_JSON['val_scores'];
+            const train_sizes = data_JSON['train_sizes'];
+            console.log("train scores: ");
+            console.log(train_scores);
+            // Calculate mean and standard deviation for train and validation scores
+            const train_mean = train_scores.map(scores => scores.reduce((a, b) => a + b, 0) / scores.length);
+            const val_mean = val_scores.map(scores => scores.reduce((a, b) => a + b, 0) / scores.length);
+
+            
+            // Plot the learning curve
+            const trace1 = {
+            x: train_sizes,
+            y: train_mean,
+            mode: 'lines+markers',
+            name: 'Training Score',
+            line: {color: 'rgb(255, 0, 0)'},
+            };
+
+            const trace2 = {
+            x: train_sizes,
+            y: val_mean,
+            mode: 'lines+markers',
+            name: 'Validation Score',
+            line: {color: 'rgb(0, 255, 0)'},
+            };
+
+            const data = [trace1, trace2];
+
+            const layout = {
+            title: 'Learning Curve',
+            xaxis: {
+                title: 'Number of Training Samples',
+            },
+            yaxis: {
+                title: 'Score',
+            },
+            };
+
+            Plotly.newPlot('plotly-graph', data, layout);
+
+        }
     })
     .catch(error => {
         console.error('Error:', error);
@@ -172,15 +223,7 @@ function displayModelData() {
     // Passenger class, age
 
     */
-    const hyperparameters = {};
-    for (const key in inputs) {
-        if (key === "dataset" || key === "modelType" || key === "testAccuracy") {
-            continue;
-        }
-        else {
-            hyperparameters[key] = inputs[key];
-        }
-    }
+    const hyperparameters = inputs["hyperparameters"];
 
     // console.log(JSON.stringify(hyperparameters));
     if (Object.keys(hyperparameters).length === 0) {
@@ -240,12 +283,13 @@ function extractInputs() {
     inputs["dataset"] = selectedText;
 
     // Extract hyperparameters
+    const hyperparam_obj = {}
     document.querySelectorAll('.hyperparameters input, .hyperparameters select').forEach(function (input) {
         if (input.offsetParent !== null) { // Check if the input is visible
-            inputs[input.id] = input.value;
+            hyperparam_obj[input.id] = input.value;
         }
     });
-
+    inputs["hyperparameters"] = hyperparam_obj;
     // Extract selected features
     document.querySelectorAll('.feature-set input[type="checkbox"]').forEach(function (checkbox) {
         if (checkbox.offsetParent !== null && checkbox.checked) { // Check if the checkbox is visible and checked
@@ -356,6 +400,7 @@ function populateLeaderboard() {
             sortResultsByAccuracy(result.rows);
             const leaderboardContainer = document.getElementById('leaderboard');
             result.rows.forEach(function (row, index) {
+                    // console.log(row.doc); 
                     const entryDiv = document.createElement('div');
                     entryDiv.classList.add('leaderboard-entry');          
                     entryDiv.innerHTML = `
@@ -364,7 +409,7 @@ function populateLeaderboard() {
                         <div class="model-type">${row.doc.modelType}</div>
                         <div class="results">${row.doc.testAccuracy}</div>
                         <div class="link">
-                            <button onclick="extractInputs(); showSection('results-form-public'); displayModelData();">➡️</button>
+                            <button onclick="showSection('results-display'); loadEntryDetails(${index})">➡️</button>
                         </div>
                     `;            
                     leaderboardContainer.appendChild(entryDiv);
@@ -375,9 +420,87 @@ function populateLeaderboard() {
         });
 }
 
+function loadEntryDetails(index) {
+    db.allDocs({ include_docs: true })
+        .then(function (result) {    
+        const resultsContainer = document.getElementById('results-container');
+        const resultDiv = document.createElement('div');
+        resultsContainer.innerHTML = '';
+        console.log(result.rows[index].doc)
+        let theCorrespondingEntry = result.rows[index].doc
+        console.log("corresponing entry: ")
+        console.log(theCorrespondingEntry);
+        console.log("hyperparameters: ");
+        console.log(theCorrespondingEntry["hyperparameters"]);
+
+        // extract hyperparameters
+        const hyperparameters_obj = theCorrespondingEntry["hyperparameters"];
+        let hyperparameters_str = ""
+        if(Object.keys(hyperparameters_obj).length === 0){
+            hyperparameters_str = "None specified"
+        }
+        else {
+            for (const [key, value] of Object.entries(hyperparameters_obj)){
+                hyperparameters_str += `${key}: ${value} \n`;
+            }
+        }
+
+        const detailsHtml = `
+                <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
+                <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
+                <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A'}</span></div>
+                <div class="result-detail"><strong>Dataset:</strong> <span>${theCorrespondingEntry.dataset}</span></div>
+                <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
+                <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
+                <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
+            `;
+
+            resultDiv.innerHTML = detailsHtml;
+            resultsContainer.appendChild(resultDiv);
+            showSection('results-display'); // Show the details section
+    }).catch(function (error) {
+        console.error('Error loading entry details:', error);
+    });
+}
+
+
+// function loadResults() {
+//     // Fetch all documents from the database
+//     db.allDocs({ include_docs: true })
+//         .then(function (result) {
+//             // Optionally sort the results by accuracy if necessary
+//             // result.rows.sort((a, b) => (b.doc.testAccuracy || 0) - (a.doc.testAccuracy || 0));
+
+//             const resultsContainer = document.getElementById('results-display');
+
+//             // Iterate over each document and create HTML for each entry
+//             result.rows.forEach((row, index) => {
+//                 const resultDiv = document.createElement('div');
+//                 console.log("name name name" + row.doc.name);
+//                 resultDiv.innerHTML = `
+//                     <div class="rank">${index + 1}</div>
+//                     <div class="name">${row.doc.name}</div>
+//                     <div class="model-type">${row.doc.modelType}</div>
+//                     <div class="accuracy"><strong>Test Accuracy:</strong> ${row.doc.testAccuracy || 'N/A'}</div>
+//                     <div class="dataset"><strong>Dataset:</strong> ${row.doc.dataset}</div>
+//                     <div class="hyperparameters"><strong>Hyperparameters:</strong> ${row.doc.hyperparameters}</div>
+//                     <div class="tuning"><strong>Tuning:</strong> ${row.doc.modelTuning}</div>
+//                     <div class="improvements"><strong>Improvements:</strong> ${row.doc.improvement}</div>
+//                     <div class="link"><button onclick="showSection('results-display')">➡️ View Details</button></div>
+//                 `;
+
+//                 resultsContainer.appendChild(resultDiv); // Append to the correct container
+//             });
+//         })
+//         .catch(error => {
+//             console.error('Error loading results:', error);
+//         });
+// }
+
 
 
 window.onload = set_up;
 
 // db content which is logged is unavaiable after page reload (like when form is submitted)
 window.addEventListener('load', populateLeaderboard);
+window.addEventListener('load', loadEntryDetails);
