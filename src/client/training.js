@@ -130,6 +130,7 @@ function startTraining() {
                 height: 500
             });
             
+            
         }
         else {
             // Assuming train_scores and val_scores are available as arrays
@@ -222,15 +223,7 @@ function displayModelData() {
     // Passenger class, age
 
     */
-    const hyperparameters = {};
-    for (const key in inputs) {
-        if (key === "dataset" || key === "modelType" || key === "testAccuracy") {
-            continue;
-        }
-        else {
-            hyperparameters[key] = inputs[key];
-        }
-    }
+    const hyperparameters = inputs["hyperparameters"];
 
     // console.log(JSON.stringify(hyperparameters));
     if (Object.keys(hyperparameters).length === 0) {
@@ -290,12 +283,13 @@ function extractInputs() {
     inputs["dataset"] = selectedText;
 
     // Extract hyperparameters
+    const hyperparam_obj = {}
     document.querySelectorAll('.hyperparameters input, .hyperparameters select').forEach(function (input) {
         if (input.offsetParent !== null) { // Check if the input is visible
-            inputs[input.id] = input.value;
+            hyperparam_obj[input.id] = input.value;
         }
     });
-
+    inputs["hyperparameters"] = hyperparam_obj;
     // Extract selected features
     document.querySelectorAll('.feature-set input[type="checkbox"]').forEach(function (checkbox) {
         if (checkbox.offsetParent !== null && checkbox.checked) { // Check if the checkbox is visible and checked
@@ -434,13 +428,30 @@ function loadEntryDetails(index) {
         resultsContainer.innerHTML = '';
         console.log(result.rows[index].doc)
         let theCorrespondingEntry = result.rows[index].doc
+        console.log("corresponing entry: ")
+        console.log(theCorrespondingEntry);
+        console.log("hyperparameters: ");
+        console.log(theCorrespondingEntry["hyperparameters"]);
+
+        // extract hyperparameters
+        const hyperparameters_obj = theCorrespondingEntry["hyperparameters"];
+        let hyperparameters_str = ""
+        if(Object.keys(hyperparameters_obj).length === 0){
+            hyperparameters_str = "None specified"
+        }
+        else {
+            for (const [key, value] of Object.entries(hyperparameters_obj)){
+                hyperparameters_str += `${key}: ${value} \n`;
+            }
+        }
+
         const detailsHtml = `
                 <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
                 <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
                 <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A'}</span></div>
                 <div class="result-detail"><strong>Dataset:</strong> <span>${theCorrespondingEntry.dataset}</span></div>
-                <div class="result-detail"><strong>Hyperparameters:</strong> <span>${theCorrespondingEntry.hyperparameters}</span></div>
-                <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry.modelTuning}</span></div>
+                <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
+                <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
                 <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
             `;
 

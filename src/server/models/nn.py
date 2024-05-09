@@ -79,6 +79,7 @@ def get_accuracy(model, X, y):
         y_pred = (y_pred > 0.5).float()  # Convert probabilities to binary predictions
 
     accuracy = accuracy_score(y.numpy(), y_pred.numpy())
+    return accuracy
 
 
 import numpy as np
@@ -87,7 +88,7 @@ def get_MSE(model, X, y):
 
     y_pred = model.forward(X)
     mse = nn.MSELoss()(y_pred, y)
-    return mse
+    return mse.item()
 
 
 class CustomNN(nn.Module):

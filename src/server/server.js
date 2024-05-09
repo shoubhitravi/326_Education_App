@@ -22,7 +22,7 @@ app.post('/create_model', (req, res) => {
     let file_path = ''
     if (inputs['modelType'] === 'Linear Regression'){
         // file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/lin_reg.py'
-        file_path = "C:\\SchoolClasses\\CS 326 Web Programming\\Final final project\\326_Education_App\\src\\server\\models\\lin_reg.py"
+        file_path = "/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/lin_reg.py"
     }
     else if (inputs['modelType'] === 'Decision Tree'){
         file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/decision.py'
@@ -32,7 +32,7 @@ app.post('/create_model', (req, res) => {
     }
 
 
-    const pythonProcess = spawn('C:\\Users\\User\\AppData\\Local\\Microsoft\\WindowsApps\\python3.exe', [file_path, JSON.stringify(inputs)], {
+    const pythonProcess = spawn('/usr/local/bin/python3', [file_path, JSON.stringify(inputs)], {
         maxBuffer: 10 * 1024 * 1024 * 1024
     });
     
