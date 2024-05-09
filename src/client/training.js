@@ -100,6 +100,7 @@ function startTraining() {
     const loss = document.getElementById("loss");
 
     const inputs = extractHyperparameters();
+    const modelType = inputs["modelType"];
 
     fetch('http://localhost:3000/create_model', { // Replace with your backend server URL
         method: 'POST',
@@ -110,22 +111,71 @@ function startTraining() {
     })
     .then(response => response.text())
     .then(data => {
+        
         console.log(data); // Handle the response from the server
         data_JSON = JSON.parse(data);
-        // Update the Plotly graph
-        Plotly.newPlot('plotly-graph', [{
-            x: data_JSON['losses'],
-            y: data_JSON['losses'].map((_, index) => index + 1),
-            type: 'scatter',
-            mode: 'lines',
-            name: 'Loss over Time'
-        }], {
-            title: 'Loss over Time',
-            xaxis: { title: 'Iterations' },
-            yaxis: { title: 'Loss' },
-            height: 500
-        });
-        loss.textContent = data_JSON['mse'].toFixed(2);;
+            // Update the Plotly graph
+        console.log(modelType);
+        if (modelType !== "Decision Tree"){
+            Plotly.newPlot('plotly-graph', [{
+                x: data_JSON['losses'],
+                y: data_JSON['losses'].map((_, index) => index + 1),
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Loss over Time'
+            }], {
+                title: 'Loss over Time',
+                xaxis: { title: 'Iterations' },
+                yaxis: { title: 'Loss' },
+                height: 500
+            });
+            
+        }
+        else {
+            // Assuming train_scores and val_scores are available as arrays
+
+            const train_scores = data_JSON['train_scores'];
+            const val_scores = data_JSON['val_scores'];
+            const train_sizes = data_JSON['train_sizes'];
+            console.log("train scores: ");
+            console.log(train_scores);
+            // Calculate mean and standard deviation for train and validation scores
+            const train_mean = train_scores.map(scores => scores.reduce((a, b) => a + b, 0) / scores.length);
+            const val_mean = val_scores.map(scores => scores.reduce((a, b) => a + b, 0) / scores.length);
+
+            
+            // Plot the learning curve
+            const trace1 = {
+            x: train_sizes,
+            y: train_mean,
+            mode: 'lines+markers',
+            name: 'Training Score',
+            line: {color: 'rgb(255, 0, 0)'},
+            };
+
+            const trace2 = {
+            x: train_sizes,
+            y: val_mean,
+            mode: 'lines+markers',
+            name: 'Validation Score',
+            line: {color: 'rgb(0, 255, 0)'},
+            };
+
+            const data = [trace1, trace2];
+
+            const layout = {
+            title: 'Learning Curve',
+            xaxis: {
+                title: 'Number of Training Samples',
+            },
+            yaxis: {
+                title: 'Score',
+            },
+            };
+
+            Plotly.newPlot('plotly-graph', data, layout);
+
+        }
     })
     .catch(error => {
         console.error('Error:', error);

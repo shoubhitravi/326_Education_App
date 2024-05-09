@@ -28,10 +28,9 @@ def load_data(file_path):
     if (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/titanic.csv'):
         X = df_imputed.drop(columns=['Survived'])  # Exclude the target variable
         y = df_imputed['Survived']
-    elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv'):
-        boston = load_boston()
-        X = pd.DataFrame(boston.data, columns=boston.feature_names)
-        y = pd.Series(boston.target)
+    elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/boston.csv'):
+        X = df_imputed.drop(columns=['MEDV'])
+        y = df_imputed['MEDV']
     elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'):
         X = df_imputed.drop(columns=['quality'])
         y = df_imputed['quality']
@@ -158,7 +157,7 @@ if __name__ == "__main__":
     num_hidden_layers = int(inputs["num-hidden-layers"])
 
     if (dataset == "Boston Housing Dataset"):
-        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv'
+        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/boston.csv'
     elif (dataset == "Wine Quality Dataset"):
         file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
     else:
@@ -173,5 +172,9 @@ if __name__ == "__main__":
 
     losses = train_model(model=model, X_train=X_train, y_train=y_train, criterion=criterion, optimizer=optimizer, num_epochs=100)
 
-    mse_test = 5
-    print(json.dumps({ "losses": losses, "mse": mse_test}))
+    result = 0
+    if ((dataset == "Titanic Dataset")):
+        result = get_accuracy(model, X_test, y_test)
+    else:
+        result = get_MSE(model, X_test, y_test)
+    print(json.dumps({ "losses": losses, "result": result}))
