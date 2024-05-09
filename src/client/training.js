@@ -246,12 +246,12 @@ function extractInputs() {
         }
     });
 
-    // Extract selected features
-    document.querySelectorAll('.feature-set input[type="checkbox"]').forEach(function (checkbox) {
-        if (checkbox.offsetParent !== null && checkbox.checked) { // Check if the checkbox is visible and checked
-            inputs[checkbox.id] = true;
-        }
-    });
+    // // Extract selected features
+    // document.querySelectorAll('.feature-set input[type="checkbox"]').forEach(function (checkbox) {
+    //     if (checkbox.offsetParent !== null && checkbox.checked) { // Check if the checkbox is visible and checked
+    //         inputs[checkbox.id] = true;
+    //     }
+    // });
 
     // Extract model type
     document.querySelectorAll('.hyperparameters').forEach(function (input) {
@@ -260,13 +260,26 @@ function extractInputs() {
         }
     });
 
-    // Extract Test Accuracy
+    // Extract Test Accuracy or Loss
     document.querySelectorAll(".results").forEach(function (input) {
         if (input.offsetParent !== null) {
-            inputs["testAccuracy"] = input.querySelector("#test-accuracy").textContent;
+            if(input.querySelector("#test-accuracy") !== null){
+                inputs["testAccuracy"] = input.querySelector("#test-accuracy").textContent;
+            }
+            if(input.querySelector("#loss") !== null){
+                inputs["loss"] = input.querySelector("#loss").textContent;
+            }
         }
     }
     );
+
+    // // Extract Loss
+    // document.querySelectorAll(".results").forEach(function (input) {
+    //     if (input.offsetParent !== null) {
+    //         inputs["loss"] = input.querySelector("#loss").textContent;
+    //     }
+    // }
+    // );
 
     // Store in local storage and PouchDB
     localStorage.setItem('inputs', JSON.stringify(inputs));
@@ -304,6 +317,8 @@ function extractResultInfo() {
     localStorage.setItem('inputs', JSON.stringify(inputs));
 
     storeInputsInDB(inputs);
+
+    showSection('leaderboard')
     // logAllContents();
     return inputs;
 }
@@ -333,7 +348,7 @@ function logAllContents() {
     db.allDocs({ include_docs: true })
         .then(function (result) {
             // Iterate over each document and log its contents
-            result.rows.forEach(function (row) {
+             result.rows.forEach(function (row) {
                 console.log(row.doc); // Log the document contents
             });
         })
@@ -348,3 +363,31 @@ window.onload = set_up;
 
 // db content which is logged is unavaiable after page reload (like when form is submitted)
 window.addEventListener('load', logAllContents);
+
+window.addEventListener('load', function(){
+    this.document.getElementById('test-accuracy-container').style.display = 'none';
+});
+
+// Hide buttons and features that are not relevant to the current dataset
+document.getElementById('dataset-select').addEventListener('change', function(){
+    var selectedDataset = this.value;
+
+    // hide the test accuracy container and linear regression model option because titanic is a classification dataset
+    if(selectedDataset == "titanic"){
+        document.getElementById('lg-button').style.display = 'none';
+        document.getElementById('dt-button').style.display = 'block';
+        document.getElementById('nn-button').style.display = 'block';
+        document.getElementById('test-accuracy-container').style.display = 'block';
+        document.getElementById('loss-container').style.display = 'none';
+        document.getElementById('dt-button').click();
+    }
+
+    if(selectedDataset == "wine" || selectedDataset == "boston"){
+        document.getElementById('lg-button').style.display = 'block';
+        document.getElementById('dt-button').style.display = 'block';
+        document.getElementById('nn-button').style.display = 'block';
+        document.getElementById('loss-container').style.display = 'block';
+        document.getElementById('test-accuracy-container').style.display = 'none';
+
+    }
+})

@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import numpy as np
@@ -25,14 +24,17 @@ def load_data(file_path):
 
 
 
-    if (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/titanic.csv'):
+    # if (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/titanic.csv'):
+    if (file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/titanic.csv"):
         X = df_imputed.drop(columns=['Survived'])  # Exclude the target variable
         y = df_imputed['Survived']
-    elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv'):
-        boston = load_boston()
-        X = pd.DataFrame(boston.data, columns=boston.feature_names)
-        y = pd.Series(boston.target)
-    elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'):
+    # elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv'):
+    # elif file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/housing_mod.csv":
+    #     boston = load_boston()
+    #     X = pd.DataFrame(boston.data, columns=boston.feature_names)
+    #     y = pd.Series(boston.target)
+    # elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'):
+    elif file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/WineQT.csv":
         X = df_imputed.drop(columns=['quality'])
         y = df_imputed['quality']
 
@@ -148,7 +150,8 @@ def create_nn(input_size, hidden_size, output_size, num_hidden_layers, activatio
 
 if __name__ == "__main__":
     # Example usage:
-    file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
+    # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
+    file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/WineQT.csv"
     
     # get arguments
     inputs = json.loads(sys.argv[1])
@@ -158,11 +161,14 @@ if __name__ == "__main__":
     num_hidden_layers = int(inputs["num-hidden-layers"])
 
     if (dataset == "Boston Housing Dataset"):
-        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv'
+        # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv'
+        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/housing_mod.csv"
     elif (dataset == "Wine Quality Dataset"):
-        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
+        # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
+        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/WineQT.csv"
     else:
-        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/titanic.csv'
+        # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/titanic.csv'
+        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/titanic.csv"
 
     X_train, y_train, X_test, y_test = load_data(file_path)
 

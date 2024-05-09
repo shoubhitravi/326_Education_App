@@ -40,26 +40,26 @@ function startModeling(datasetId) {
  *
  * @param {string} datasetId - The ID of the dataset whose features are to be displayed.
  */
-function showFeatures(datasetId) {
-  // Implement the feature showing logic based on dataset
-  if(datasetId==="titanic"){
-    document.getElementById('boston-features').style.display = 'none';
-    document.getElementById('wine-features').style.display = 'none';
-    document.getElementById('titanic-features').style.display = 'block';
+// function showFeatures(datasetId) {
+//   // Implement the feature showing logic based on dataset
+//   if(datasetId==="titanic"){
+//     document.getElementById('boston-features').style.display = 'none';
+//     document.getElementById('wine-features').style.display = 'none';
+//     document.getElementById('titanic-features').style.display = 'block';
 
-  }
-  else if(datasetId==="boston"){
-    document.getElementById('titanic-features').style.display = 'none';
-    document.getElementById('wine-features').style.display = 'none';
-    document.getElementById('boston-features').style.display = 'block';
-  }
-  else if(datasetId==="wine"){
-    document.getElementById('boston-features').style.display = 'none';
-    document.getElementById('titanic-features').style.display = 'none';
-    document.getElementById('wine-features').style.display = 'block';
+//   }
+//   else if(datasetId==="boston"){
+//     document.getElementById('titanic-features').style.display = 'none';
+//     document.getElementById('wine-features').style.display = 'none';
+//     document.getElementById('boston-features').style.display = 'block';
+//   }
+//   else if(datasetId==="wine"){
+//     document.getElementById('boston-features').style.display = 'none';
+//     document.getElementById('titanic-features').style.display = 'none';
+//     document.getElementById('wine-features').style.display = 'block';
 
-  }
-}
+//   }
+// }
 
 /**
  * Starts the user's journey by hiding the home section and displaying the datasets section.
