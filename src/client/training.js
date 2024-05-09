@@ -320,7 +320,6 @@ function extractInputs() {
 
     // Store in local storage and PouchDB
     localStorage.setItem('inputs', JSON.stringify(inputs));
-
     // clear database script
     // db.destroy().then(function() {
     //     console.log("database cleared successfully");
@@ -334,9 +333,9 @@ function extractInputs() {
     return inputs;
 }
 
+
 function extractResultInfo() {
     const inputs = JSON.parse(localStorage.getItem('inputs'));
-
     // console.log(inputs);
     // extract name
     const name = document.getElementById("name-field").value;
@@ -360,7 +359,7 @@ function extractResultInfo() {
 
 // model submissions dataset
 const db = new PouchDB('model_db');
-
+console.log(JSON.parse(localStorage.getItem('inputs')))
 /**
  * Stores the provided input data in a PouchDB database with a unique timestamp as the ID.
  *
@@ -375,16 +374,51 @@ function storeInputsInDB(inputs) {
     return db.put(doc);
 }
 
+function clearDatabase() {
+    db.allDocs()
+        .then(result => {
+            return Promise.all(result.rows.map(row => {
+                return db.remove(row.id, row.value.rev);
+            }));
+        })
+        .then(() => {
+            console.log('All documents successfully deleted');
+        })
+        .catch(err => {
+            console.error('Error deleting documents', err);
+        });
+}
+
+function sortResultsByAccuracy(results) {
+    results.sort(function(a, b) {
+        // Ensure both values are treated as numbers
+        return parseFloat(b.doc.testAccuracy) - parseFloat(a.doc.testAccuracy); // Sorting in descending order
+    });
+}
 /**
  * Logs all contents of the PouchDB database to the console.
  */
-function logAllContents() {
+function populateLeaderboard() {
     // Retrieve all documents from the database
     db.allDocs({ include_docs: true })
         .then(function (result) {
             // Iterate over each document and log its contents
-            result.rows.forEach(function (row) {
-                console.log(row.doc); // Log the document contents
+            sortResultsByAccuracy(result.rows);
+            const leaderboardContainer = document.getElementById('leaderboard');
+            result.rows.forEach(function (row, index) {
+                    // console.log(row.doc); 
+                    const entryDiv = document.createElement('div');
+                    entryDiv.classList.add('leaderboard-entry');          
+                    entryDiv.innerHTML = `
+                        <div class="rank">${index + 1}</div>
+                        <div class="name">${row.doc.name}</div>
+                        <div class="model-type">${row.doc.modelType}</div>
+                        <div class="results">${row.doc.testAccuracy}</div>
+                        <div class="link">
+                            <button onclick="showSection('results-display'); loadEntryDetails(${index})">➡️</button>
+                        </div>
+                    `;            
+                    leaderboardContainer.appendChild(entryDiv);
             });
         })
         .catch(function (error) {
@@ -392,9 +426,70 @@ function logAllContents() {
         });
 }
 
+function loadEntryDetails(index) {
+    db.allDocs({ include_docs: true })
+        .then(function (result) {    
+        const resultsContainer = document.getElementById('results-container');
+        const resultDiv = document.createElement('div');
+        resultsContainer.innerHTML = '';
+        console.log(result.rows[index].doc)
+        let theCorrespondingEntry = result.rows[index].doc
+        const detailsHtml = `
+                <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
+                <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
+                <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A'}</span></div>
+                <div class="result-detail"><strong>Dataset:</strong> <span>${theCorrespondingEntry.dataset}</span></div>
+                <div class="result-detail"><strong>Hyperparameters:</strong> <span>${theCorrespondingEntry.hyperparameters}</span></div>
+                <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry.modelTuning}</span></div>
+                <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
+            `;
+
+            resultDiv.innerHTML = detailsHtml;
+            resultsContainer.appendChild(resultDiv);
+            showSection('results-display'); // Show the details section
+    }).catch(function (error) {
+        console.error('Error loading entry details:', error);
+    });
+}
+
+
+// function loadResults() {
+//     // Fetch all documents from the database
+//     db.allDocs({ include_docs: true })
+//         .then(function (result) {
+//             // Optionally sort the results by accuracy if necessary
+//             // result.rows.sort((a, b) => (b.doc.testAccuracy || 0) - (a.doc.testAccuracy || 0));
+
+//             const resultsContainer = document.getElementById('results-display');
+
+//             // Iterate over each document and create HTML for each entry
+//             result.rows.forEach((row, index) => {
+//                 const resultDiv = document.createElement('div');
+//                 console.log("name name name" + row.doc.name);
+//                 resultDiv.innerHTML = `
+//                     <div class="rank">${index + 1}</div>
+//                     <div class="name">${row.doc.name}</div>
+//                     <div class="model-type">${row.doc.modelType}</div>
+//                     <div class="accuracy"><strong>Test Accuracy:</strong> ${row.doc.testAccuracy || 'N/A'}</div>
+//                     <div class="dataset"><strong>Dataset:</strong> ${row.doc.dataset}</div>
+//                     <div class="hyperparameters"><strong>Hyperparameters:</strong> ${row.doc.hyperparameters}</div>
+//                     <div class="tuning"><strong>Tuning:</strong> ${row.doc.modelTuning}</div>
+//                     <div class="improvements"><strong>Improvements:</strong> ${row.doc.improvement}</div>
+//                     <div class="link"><button onclick="showSection('results-display')">➡️ View Details</button></div>
+//                 `;
+
+//                 resultsContainer.appendChild(resultDiv); // Append to the correct container
+//             });
+//         })
+//         .catch(error => {
+//             console.error('Error loading results:', error);
+//         });
+// }
+
 
 
 window.onload = set_up;
 
 // db content which is logged is unavaiable after page reload (like when form is submitted)
-window.addEventListener('load', logAllContents);
+window.addEventListener('load', populateLeaderboard);
+window.addEventListener('load', loadEntryDetails);
