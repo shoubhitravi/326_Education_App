@@ -4,8 +4,8 @@
  * Sets up the initial display state of various divs and populates input fields based on
  * previously saved data in local storage.
  */
-function set_up(){
-    
+function set_up() {
+
     const neural_div = document.getElementById("neural-hyperparameters");
     const decision_div = document.getElementById("decision-hyperparameters");
     neural_div.style.display = 'none';
@@ -65,7 +65,7 @@ function populateInputsFromLocalStorage() {
  */
 function showModel(modelType) {
     // Hide all hyperparameter sections
-    document.querySelectorAll('.hyperparameters').forEach(function(el) {
+    document.querySelectorAll('.hyperparameters').forEach(function (el) {
         el.style.display = 'none';
     });
 
@@ -78,7 +78,7 @@ function showModel(modelType) {
  */
 function showFeatures() {
     // Hide all feature sets
-    document.querySelectorAll('.feature-set').forEach(function(el) {
+    document.querySelectorAll('.feature-set').forEach(function (el) {
         el.style.display = 'none';
     });
 
@@ -96,34 +96,151 @@ function showFeatures() {
  * random test accuracy and loss on the webpage.
  */
 function startTraining() {
-    // Simulate training with fake data
-    let iterations = [];
-    let lossValues = [];
-
-    const tAcc = document.getElementById("test-accuracy");
+    
     const loss = document.getElementById("loss");
 
-    const maxIterations = 100;
-    for (let i = 1; i <= maxIterations; i++) {
-        iterations.push(i);
-        lossValues.push(Math.random() * 100); // Random value for demonstration
-    }
+    const inputs = extractHyperparameters();
+    const modelType = inputs["modelType"];
 
-    // Update the Plotly graph
-    Plotly.newPlot('plotly-graph', [{
-        x: iterations,
-        y: lossValues,
-        type: 'scatter',
-        mode: 'lines',
-        name: 'Loss over Time'
-    }], {
-        title: 'Loss over Time',
-        xaxis: { title: 'Iterations' },
-        yaxis: { title: 'Loss' }
+    fetch('http://localhost:3000/create_model', { // Replace with your backend server URL
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(inputs)
+    })
+    .then(response => response.text())
+    .then(data => {
+        
+        console.log(data); // Handle the response from the server
+        data_JSON = JSON.parse(data);
+            // Update the Plotly graph
+        console.log(modelType);
+        if (modelType !== "Decision Tree"){
+            Plotly.newPlot('plotly-graph', [{
+                x: data_JSON['losses'],
+                y: data_JSON['losses'].map((_, index) => index + 1),
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Loss over Time'
+            }], {
+                title: 'Loss over Time',
+                xaxis: { title: 'Iterations' },
+                yaxis: { title: 'Loss' },
+                height: 500
+            });
+            
+            
+        }
+        else {
+            // Assuming train_scores and val_scores are available as arrays
+
+            const train_scores = data_JSON['train_scores'];
+            const val_scores = data_JSON['val_scores'];
+            const train_sizes = data_JSON['train_sizes'];
+            console.log("train scores: ");
+            console.log(train_scores);
+            // Calculate mean and standard deviation for train and validation scores
+            const train_mean = train_scores.map(scores => scores.reduce((a, b) => a + b, 0) / scores.length);
+            const val_mean = val_scores.map(scores => scores.reduce((a, b) => a + b, 0) / scores.length);
+
+            
+            // Plot the learning curve
+            const trace1 = {
+            x: train_sizes,
+            y: train_mean,
+            mode: 'lines+markers',
+            name: 'Training Score',
+            line: {color: 'rgb(255, 0, 0)'},
+            };
+
+            const trace2 = {
+            x: train_sizes,
+            y: val_mean,
+            mode: 'lines+markers',
+            name: 'Validation Score',
+            line: {color: 'rgb(0, 255, 0)'},
+            };
+
+            const data = [trace1, trace2];
+
+            const layout = {
+            title: 'Learning Curve',
+            xaxis: {
+                title: 'Number of Training Samples',
+            },
+            yaxis: {
+                title: 'Score',
+            },
+            };
+
+            Plotly.newPlot('plotly-graph', data, layout);
+
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
-    tAcc.textContent = (Math.random() * 100).toFixed(2) + "%";
-    loss.textContent = (Math.random() * 1000).toFixed(2);
 }
+
+
+// Display model data (dataset, model type, test accuracy, hyperparameters) on share page form
+function displayModelData() {
+    const inputs = JSON.parse(localStorage.getItem('inputs'));
+    const datasetSpan = document.getElementById("dataset-span");
+    const modelTypeSpan = document.getElementById("model-type-span");
+    const testAccuracySpan = document.getElementById("accuracy-span");
+    const hyperparametersSpan = document.getElementById("hyperparameters-span");
+
+    datasetSpan.textContent = inputs["dataset"];
+    modelTypeSpan.textContent = inputs["modelType"];
+    testAccuracySpan.textContent = inputs["testAccuracy"];
+    // console.log(inputs["dataset"])
+
+    // Hyperparameters: 
+    /*
+    // Linear Regression Hyperparameters:
+    // Learning rate, number of iterations, regularization
+
+    // Decision Tree Hyperparameters:
+    // Criterion, Splitter, Max Depth, Min Samples Split
+
+    // Neural Network Hyperparameters:
+    // Number of hidden layers, neurons per layer, activation function, learning rate
+
+    */
+
+    // Dataset Features
+    /*
+
+    // Boston Housing 
+    // Per capita crime rate by town, proportion of residential land zoned for lots over 25,000 sq. ft.
+
+    // Wine Quality
+    // Fixed acidity, volatile acidity
+
+    // Titanic
+    // Passenger class, age
+
+    */
+    const hyperparameters = inputs["hyperparameters"];
+
+    // console.log(JSON.stringify(hyperparameters));
+    if (Object.keys(hyperparameters).length === 0) {
+        hyperparameters.textContent = "None specified"
+    }
+    else {
+        let hyperparametersHtml = '<ul>';
+        for (const [key, value] of Object.entries(hyperparameters)) {
+            hyperparametersHtml += `<li>${key}: ${value}</li>`;
+        }
+        hyperparametersHtml += '</ul>';
+
+        // Insert the HTML into the DOM
+        hyperparametersSpan.innerHTML = hyperparametersHtml;
+    }
+}
+
 
 /**
  * Extracts inputs from the user form, including selected dataset, hyperparameters, and features,
@@ -131,6 +248,32 @@ function startTraining() {
  *
  * @returns {Object} The inputs extracted from the form elements.
  */
+
+
+function extractHyperparameters(){
+    const hyperparameters = {}
+
+    const datasetSelect = document.getElementById('dataset-select');
+    const selectedText = datasetSelect.options[datasetSelect.selectedIndex].textContent;
+    hyperparameters["dataset"] = selectedText;
+    
+    // Extract hyperparameters
+    document.querySelectorAll('.hyperparameters input, .hyperparameters select').forEach(function (input) {
+        if (input.offsetParent !== null) { // Check if the input is visible
+            hyperparameters[input.id] = input.value;
+        }
+    });
+
+    // Extract model type
+    document.querySelectorAll('.hyperparameters').forEach(function (input) {
+        if (input.offsetParent !== null) { // Check if the input is visible
+            hyperparameters["modelType"] = input.querySelector('h2').textContent.split(" ").slice(0, 2).join(" ");
+        }
+    });
+    console.log(hyperparameters);
+    return hyperparameters;
+}
+
 function extractInputs() {
     const inputs = {};
 
@@ -140,29 +283,77 @@ function extractInputs() {
     inputs["dataset"] = selectedText;
 
     // Extract hyperparameters
-    document.querySelectorAll('.hyperparameters input, .hyperparameters select').forEach(function(input) {
+    const hyperparam_obj = {}
+    document.querySelectorAll('.hyperparameters input, .hyperparameters select').forEach(function (input) {
         if (input.offsetParent !== null) { // Check if the input is visible
-            inputs[input.id] = input.value;
+            hyperparam_obj[input.id] = input.value;
         }
     });
-
+    inputs["hyperparameters"] = hyperparam_obj;
     // Extract selected features
-    document.querySelectorAll('.feature-set input[type="checkbox"]').forEach(function(checkbox) {
+    document.querySelectorAll('.feature-set input[type="checkbox"]').forEach(function (checkbox) {
         if (checkbox.offsetParent !== null && checkbox.checked) { // Check if the checkbox is visible and checked
             inputs[checkbox.id] = true;
         }
     });
 
+    // Extract model type
+    document.querySelectorAll('.hyperparameters').forEach(function (input) {
+        if (input.offsetParent !== null) { // Check if the input is visible
+            inputs["modelType"] = input.querySelector('h2').textContent.split(" ").slice(0, 2).join(" ");
+        }
+    });
+
+    // Extract Test Accuracy
+    document.querySelectorAll(".results").forEach(function (input) {
+        if (input.offsetParent !== null) {
+            inputs["testAccuracy"] = input.querySelector("#test-accuracy").textContent;
+        }
+    }
+    );
+
     // Store in local storage and PouchDB
     localStorage.setItem('inputs', JSON.stringify(inputs));
+    // clear database script
+    // db.destroy().then(function() {
+    //     console.log("database cleared successfully");
+    // }).catch
+    // (function(err) {
+    //     console.log("error: ", err);
+    // });
+
+    // storeInputsInDB(inputs);
+    // logAllContents();
+    return inputs;
+}
+
+
+function extractResultInfo() {
+    const inputs = JSON.parse(localStorage.getItem('inputs'));
+    // console.log(inputs);
+    // extract name
+    const name = document.getElementById("name-field").value;
+    // console.log(name)
+    // extract how tuned
+    const modelTuning = document.getElementById("model-tuning-field").value;
+    // console.log(modelTuning)
+    // extract how improve 
+    const improvement = document.getElementById("model-improvement-field").value;
+    // console.log(improvement)
+    inputs["name"] = name;
+    inputs["model-tuning"] = modelTuning;
+    inputs["improvement"] = improvement;
+
+    localStorage.setItem('inputs', JSON.stringify(inputs));
+
     storeInputsInDB(inputs);
-    logAllContents();
+    // logAllContents();
     return inputs;
 }
 
 // model submissions dataset
 const db = new PouchDB('model_db');
-
+console.log(JSON.parse(localStorage.getItem('inputs')))
 /**
  * Stores the provided input data in a PouchDB database with a unique timestamp as the ID.
  *
@@ -172,28 +363,144 @@ const db = new PouchDB('model_db');
 function storeInputsInDB(inputs) {
     const uniqueId = Date.now().toString();
 
-    const doc = { _id: uniqueId, ...inputs}
-    
+    const doc = { _id: uniqueId, ...inputs }
+
     return db.put(doc);
 }
 
+function clearDatabase() {
+    db.allDocs()
+        .then(result => {
+            return Promise.all(result.rows.map(row => {
+                return db.remove(row.id, row.value.rev);
+            }));
+        })
+        .then(() => {
+            console.log('All documents successfully deleted');
+        })
+        .catch(err => {
+            console.error('Error deleting documents', err);
+        });
+}
+
+function sortResultsByAccuracy(results) {
+    results.sort(function(a, b) {
+        // Ensure both values are treated as numbers
+        return parseFloat(b.doc.testAccuracy) - parseFloat(a.doc.testAccuracy); // Sorting in descending order
+    });
+}
 /**
  * Logs all contents of the PouchDB database to the console.
  */
-function logAllContents() {
+function populateLeaderboard() {
     // Retrieve all documents from the database
     db.allDocs({ include_docs: true })
-        .then(function(result) {
+        .then(function (result) {
             // Iterate over each document and log its contents
-            result.rows.forEach(function(row) {
-                console.log(row.doc); // Log the document contents
+            sortResultsByAccuracy(result.rows);
+            const leaderboardContainer = document.getElementById('leaderboard');
+            result.rows.forEach(function (row, index) {
+                    // console.log(row.doc); 
+                    const entryDiv = document.createElement('div');
+                    entryDiv.classList.add('leaderboard-entry');          
+                    entryDiv.innerHTML = `
+                        <div class="rank">${index + 1}</div>
+                        <div class="name">${row.doc.name}</div>
+                        <div class="model-type">${row.doc.modelType}</div>
+                        <div class="results">${row.doc.testAccuracy}</div>
+                        <div class="link">
+                            <button onclick="showSection('results-display'); loadEntryDetails(${index})">➡️</button>
+                        </div>
+                    `;            
+                    leaderboardContainer.appendChild(entryDiv);
             });
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error('Error retrieving documents from the database:', error);
         });
 }
 
+function loadEntryDetails(index) {
+    db.allDocs({ include_docs: true })
+        .then(function (result) {    
+        const resultsContainer = document.getElementById('results-container');
+        const resultDiv = document.createElement('div');
+        resultsContainer.innerHTML = '';
+        console.log(result.rows[index].doc)
+        let theCorrespondingEntry = result.rows[index].doc
+        console.log("corresponing entry: ")
+        console.log(theCorrespondingEntry);
+        console.log("hyperparameters: ");
+        console.log(theCorrespondingEntry["hyperparameters"]);
+
+        // extract hyperparameters
+        const hyperparameters_obj = theCorrespondingEntry["hyperparameters"];
+        let hyperparameters_str = ""
+        if(Object.keys(hyperparameters_obj).length === 0){
+            hyperparameters_str = "None specified"
+        }
+        else {
+            for (const [key, value] of Object.entries(hyperparameters_obj)){
+                hyperparameters_str += `${key}: ${value} \n`;
+            }
+        }
+
+        const detailsHtml = `
+                <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
+                <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
+                <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A'}</span></div>
+                <div class="result-detail"><strong>Dataset:</strong> <span>${theCorrespondingEntry.dataset}</span></div>
+                <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
+                <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
+                <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
+            `;
+
+            resultDiv.innerHTML = detailsHtml;
+            resultsContainer.appendChild(resultDiv);
+            showSection('results-display'); // Show the details section
+    }).catch(function (error) {
+        console.error('Error loading entry details:', error);
+    });
+}
+
+
+// function loadResults() {
+//     // Fetch all documents from the database
+//     db.allDocs({ include_docs: true })
+//         .then(function (result) {
+//             // Optionally sort the results by accuracy if necessary
+//             // result.rows.sort((a, b) => (b.doc.testAccuracy || 0) - (a.doc.testAccuracy || 0));
+
+//             const resultsContainer = document.getElementById('results-display');
+
+//             // Iterate over each document and create HTML for each entry
+//             result.rows.forEach((row, index) => {
+//                 const resultDiv = document.createElement('div');
+//                 console.log("name name name" + row.doc.name);
+//                 resultDiv.innerHTML = `
+//                     <div class="rank">${index + 1}</div>
+//                     <div class="name">${row.doc.name}</div>
+//                     <div class="model-type">${row.doc.modelType}</div>
+//                     <div class="accuracy"><strong>Test Accuracy:</strong> ${row.doc.testAccuracy || 'N/A'}</div>
+//                     <div class="dataset"><strong>Dataset:</strong> ${row.doc.dataset}</div>
+//                     <div class="hyperparameters"><strong>Hyperparameters:</strong> ${row.doc.hyperparameters}</div>
+//                     <div class="tuning"><strong>Tuning:</strong> ${row.doc.modelTuning}</div>
+//                     <div class="improvements"><strong>Improvements:</strong> ${row.doc.improvement}</div>
+//                     <div class="link"><button onclick="showSection('results-display')">➡️ View Details</button></div>
+//                 `;
+
+//                 resultsContainer.appendChild(resultDiv); // Append to the correct container
+//             });
+//         })
+//         .catch(error => {
+//             console.error('Error loading results:', error);
+//         });
+// }
+
 
 
 window.onload = set_up;
+
+// db content which is logged is unavaiable after page reload (like when form is submitted)
+window.addEventListener('load', populateLeaderboard);
+window.addEventListener('load', loadEntryDetails);
