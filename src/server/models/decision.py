@@ -25,13 +25,10 @@ def load_data(file_path):
     if file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/titanic.csv":
         X = df_imputed.drop(columns=['Survived'])
         y = df_imputed['Survived']
-    # elif file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv':
-    # elif file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/housing_mod.csv":
-    #     boston = load_boston()
-    #     X = pd.DataFrame(boston.data, columns=boston.feature_names)
-    #     y = pd.Series(boston.target)
-    # elif file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv':
-    elif file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/WineQT.csv":
+    elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/boston.csv'):
+        X = df_imputed.drop(columns=['MEDV'])
+        y = df_imputed['MEDV']
+    elif file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv':
         X = df_imputed.drop(columns=['quality'])
         y = df_imputed['quality']
 
@@ -39,16 +36,15 @@ def load_data(file_path):
 
     return X_train, y_train, X_test, y_test
 
-def train_model(X_train, y_train, criterion='gini', splitter='best', max_depth=None, min_samples_split=2):
-    if isinstance(y_train.iloc[0], str):
+def train_model(X_train, y_train, criterion='gini', splitter='best', max_depth=None, min_samples_split=2, classification="false"):
+    if (classification):
         model = DecisionTreeClassifier(criterion=criterion, splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split)
     else:
-        model = DecisionTreeRegressor(criterion=criterion, splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split)
+        model = DecisionTreeRegressor(criterion='mse', splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split)
     model.fit(X_train, y_train)
 
-    losses = []
 
-    return model, losses
+    return model
 
 def plot_learning_curve(train_sizes, train_scores, val_scores, title, ylabel):
     plt.figure()
@@ -90,6 +86,7 @@ def generate_learning_curve(X_train, y_train, X_val, y_val, model, title, ylabel
         val_scores.append([val_score])  # Append the score as a list
 
     plot_learning_curve(train_sizes, np.array(train_scores), np.array(val_scores), title, ylabel)
+    return train_scores, val_scores, train_sizes
 
 
 
@@ -130,6 +127,7 @@ if __name__ == "__main__":
     criterion = inputs["criterion"]
     max_depth = int(inputs["max-depth"])
     min_samples_split = int(inputs["min-samples-split"])
+    classification = (dataset == "Titanic Dataset")
 
     if (dataset == "Boston Housing Dataset"):
         # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv'
@@ -143,7 +141,9 @@ if __name__ == "__main__":
 
     X_train, y_train, X_test, y_test = load_data(file_path)
 
-    model, losses = train_model(X_train, y_train, criterion=criterion, max_depth=max_depth, min_samples_split=min_samples_split)
+    model = train_model(X_train, y_train, criterion=criterion, max_depth=max_depth, min_samples_split=min_samples_split, classification=classification)
 
-    mse_test = 5
-    print(json.dumps({ "losses": losses, "mse": mse_test}))
+    train_scores, val_scores, train_sizes = generate_learning_curve(X_train=X_train, y_train=y_train, X_val=X_test, y_val=y_test, model=model, title="graph", ylabel="idk")
+
+    result = evaluate_model(model, X_test=X_test, y_test=y_test)
+    print(json.dumps({ "train_scores": train_scores, "val_scores": val_scores, "result": result, "train_sizes": train_sizes.tolist() }))
