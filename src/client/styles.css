@@ -612,3 +612,23 @@ label {
 #plotly-graph {
     height: 500px;
 }
+
+#comments-section {
+    margin-top: 20px;
+}
+
+#comments-list {
+    list-style: none;
+    padding: 0;
+}
+
+#comments-list li {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+#comment-input {
+    width: 300px;
+    padding: 8px;
+}

@@ -13,8 +13,8 @@ function set_up() {
 
     const wine_features = document.getElementById("wine-features");
     const titanic_features = document.getElementById("titanic-features");
-    wine_features.style.display = 'none';
-    titanic_features.style.display = 'none';
+    // wine_features.style.display = 'none';
+    // titanic_features.style.display = 'none';
 
     populateInputsFromLocalStorage();
 }
@@ -96,8 +96,6 @@ function showFeatures() {
  * random test accuracy and loss on the webpage.
  */
 function startTraining() {
-    
-    const loss = document.getElementById("loss");
 
     const inputs = extractHyperparameters();
     const modelType = inputs["modelType"];
@@ -116,7 +114,12 @@ function startTraining() {
         data_JSON = JSON.parse(data);
             // Update the Plotly graph
         console.log(modelType);
+
+        
+            
+
         if (modelType !== "Decision Tree"){
+            // console.log("anshul")
             Plotly.newPlot('plotly-graph', [{
                 x: data_JSON['losses'],
                 y: data_JSON['losses'].map((_, index) => index + 1),
@@ -172,11 +175,24 @@ function startTraining() {
             yaxis: {
                 title: 'Score',
             },
+            height: 500
             };
 
             Plotly.newPlot('plotly-graph', data, layout);
+            
 
         }
+
+        // if dataset is titanic, show test accuracy
+        if(inputs["dataset"] === "Titanic Dataset"){
+            document.getElementById('test-accuracy').textContent = data_JSON['result'].toFixed(2);
+        }
+        else {
+            // Show the loss
+            loss = document.getElementById('loss');
+            loss.textContent = data_JSON['result'].toFixed(2);
+        }
+
     })
     .catch(error => {
         console.error('Error:', error);
@@ -190,11 +206,23 @@ function displayModelData() {
     const datasetSpan = document.getElementById("dataset-span");
     const modelTypeSpan = document.getElementById("model-type-span");
     const testAccuracySpan = document.getElementById("accuracy-span");
+    const lossSpan = document.getElementById("loss-span");
     const hyperparametersSpan = document.getElementById("hyperparameters-span");
 
     datasetSpan.textContent = inputs["dataset"];
     modelTypeSpan.textContent = inputs["modelType"];
-    testAccuracySpan.textContent = inputs["testAccuracy"];
+    if(inputs["dataset"] === "Titanic Dataset"){
+        testAccuracySpan.textContent = inputs["testAccuracy"];
+    }
+    else{
+        testAccuracySpan.textContent = "N/A, is a regression problem";
+    }
+    if(inputs["dataset"] === "Titanic Dataset"){
+        lossSpan.textContent = "N/A, is a classification problem";
+    }
+    else {
+        lossSpan.textContent = inputs["loss"];
+    }
     // console.log(inputs["dataset"])
 
     // Hyperparameters: 
@@ -304,13 +332,26 @@ function extractInputs() {
         }
     });
 
-    // Extract Test Accuracy
+    // Extract Test Accuracy or Loss
     document.querySelectorAll(".results").forEach(function (input) {
         if (input.offsetParent !== null) {
-            inputs["testAccuracy"] = input.querySelector("#test-accuracy").textContent;
+            if(input.querySelector("#test-accuracy") !== null){
+                inputs["testAccuracy"] = input.querySelector("#test-accuracy").textContent;
+            }
+            if(input.querySelector("#loss") !== null){
+                inputs["loss"] = input.querySelector("#loss").textContent;
+            }
         }
     }
     );
+
+    // // Extract Loss
+    // document.querySelectorAll(".results").forEach(function (input) {
+    //     if (input.offsetParent !== null) {
+    //         inputs["loss"] = input.querySelector("#loss").textContent;
+    //     }
+    // }
+    // );
 
     // Store in local storage and PouchDB
     localStorage.setItem('inputs', JSON.stringify(inputs));
@@ -347,13 +388,15 @@ function extractResultInfo() {
     localStorage.setItem('inputs', JSON.stringify(inputs));
 
     storeInputsInDB(inputs);
+
+    showSection('leaderboard')
     // logAllContents();
     return inputs;
 }
 
 // model submissions dataset
 const db = new PouchDB('model_db');
-console.log(JSON.parse(localStorage.getItem('inputs')))
+// console.log(JSON.parse(localStorage.getItem('inputs')))
 /**
  * Stores the provided input data in a PouchDB database with a unique timestamp as the ID.
  *
@@ -397,22 +440,35 @@ function populateLeaderboard() {
     db.allDocs({ include_docs: true })
         .then(function (result) {
             // Iterate over each document and log its contents
-            sortResultsByAccuracy(result.rows);
+            // sortResultsByAccuracy(result.rows);
             const leaderboardContainer = document.getElementById('leaderboard');
+
+            // clear leaderboard entries
+            current_entries = leaderboardContainer.querySelectorAll('.leaderboard-entry');
+            current_entries.forEach(entry => {
+                entry.parentNode.removeChild(entry);
+            });
+
             result.rows.forEach(function (row, index) {
-                    // console.log(row.doc); 
-                    const entryDiv = document.createElement('div');
-                    entryDiv.classList.add('leaderboard-entry');          
-                    entryDiv.innerHTML = `
-                        <div class="rank">${index + 1}</div>
-                        <div class="name">${row.doc.name}</div>
-                        <div class="model-type">${row.doc.modelType}</div>
-                        <div class="results">${row.doc.testAccuracy}</div>
-                        <div class="link">
-                            <button onclick="showSection('results-display'); loadEntryDetails(${index})">➡️</button>
-                        </div>
-                    `;            
-                    leaderboardContainer.appendChild(entryDiv);
+                // console.log(row.doc); 
+                const entryDiv = document.createElement('div');
+                entryDiv.classList.add('leaderboard-entry');
+                let result = "Accuracy: " + parseFloat(row.doc.testAccuracy).toFixed(2);
+                if (row.doc.testAccuracy === ""){
+                    result = "Loss: " + parseFloat(row.doc.loss).toFixed(2);
+                }          
+
+                const dataset = row.doc.dataset;
+                entryDiv.innerHTML = `
+                    <div class="rank">${index + 1}</div>
+                    <div class="name">${row.doc.name}</div>
+                    <div class="model-type">${row.doc.modelType}</div>
+                    <div class="results">${result}</div>
+                    <div class="link">
+                        <button onclick="showSection('results-display');  loadEntryDetails(${index})">➡️</button>
+                    </div>
+                `;            
+                leaderboardContainer.appendChild(entryDiv);
             });
         })
         .catch(function (error) {
@@ -420,14 +476,70 @@ function populateLeaderboard() {
         });
 }
 
+
+function populateLeaderboardFromLocalStorage(dataset) {
+    let entries = JSON.parse(localStorage.getItem('entries'))[dataset];
+    console.log(entries);
+
+    if(dataset === "Titanic"){
+        // sortResults(entries, "accuracy");
+        console.log((entries.sort((a, b) => parseFloat(b["testAccuracy"]) - parseFloat(a["testAccuracy"]))));
+        // console.log(entries);
+    }
+    else {
+        // sortResults(entries, "loss");
+        console.log((entries.sort((a, b) => parseFloat(a["loss"]) - parseFloat(b["loss"]))));
+        // console.log(entries);
+    }
+    // sortResultsByAccuracy(entries);
+
+    const leaderboardContainer = document.getElementById('leaderboard');
+
+    // clear leaderboard entries
+    current_entries = leaderboardContainer.querySelectorAll('.leaderboard-entry');
+    current_entries.forEach(entry => {
+        entry.parentNode.removeChild(entry);
+    });
+
+
+    entries.forEach(function(entry, index){
+        const entryDiv = document.createElement('div');
+        entryDiv.classList.add('leaderboard-entry');
+        let result = parseFloat(entry.testAccuracy).toFixed(2);
+        if (entry.testAccuracy === ""){
+            result = parseFloat(entry.loss).toFixed(2);
+        }
+        const dataset = entry.dataset;          
+        entryDiv.innerHTML = `
+            <div class="rank">${index + 1}</div>
+            <div class="name">${entry.name}</div>
+            <div class="model-type">${entry.modelType}</div>
+            <div class="results">${result}</div>
+            <div class="link">
+                <button onclick="showSection('results-display'); loadEntryDetailsByDataset('${dataset}', ${index})">➡️</button>
+            </div>
+        `;
+        leaderboardContainer.appendChild(entryDiv);
+    
+
+
+    });
+}
+
+
 function loadEntryDetails(index) {
     db.allDocs({ include_docs: true })
         .then(function (result) {    
         const resultsContainer = document.getElementById('results-container');
         const resultDiv = document.createElement('div');
         resultsContainer.innerHTML = '';
-        console.log(result.rows[index].doc)
+        // console.log(result.rows[index].doc)
+        // console.log(result.rows[index]);
+        // console.log(result.rows);
+
         let theCorrespondingEntry = result.rows[index].doc
+        
+
         console.log("corresponing entry: ")
         console.log(theCorrespondingEntry);
         console.log("hyperparameters: ");
@@ -448,7 +560,8 @@ function loadEntryDetails(index) {
         const detailsHtml = `
                 <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
                 <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
-                <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A'}</span></div>
+                <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A, is regression problem'}</span></div>
+                <div class="result-detail"><strong>Loss:</strong> <span>${theCorrespondingEntry.loss || 'N/A, is a classification problem'}</span></div>
                 <div class="result-detail"><strong>Dataset:</strong> <span>${theCorrespondingEntry.dataset}</span></div>
                 <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
                 <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
@@ -461,6 +574,112 @@ function loadEntryDetails(index) {
     }).catch(function (error) {
         console.error('Error loading entry details:', error);
     });
+}
+
+function loadEntryDetailsByDataset(dataset, index) {
+    // Retrieve the stored JSON string from localStorage
+    const storedEntries = localStorage.getItem('entries');
+    
+    // Parse the JSON string back into an object
+    const entries = JSON.parse(storedEntries);
+
+    // Access the specific dataset and then the entry at the provided index
+    if (dataset === "Titanic Dataset"){
+        dataset = "Titanic";
+    } 
+    else if (dataset === "Boston Housing Dataset"){
+        dataset = "Boston";
+    }
+    else if (dataset === "Wine Quality Dataset"){
+        dataset = "Wine";
+    }
+
+
+    if(dataset === "Titanic"){
+        // sortResults(entries, "accuracy");
+        console.log((entries[dataset].sort((a, b) => parseFloat(b["testAccuracy"]) - parseFloat(a["testAccuracy"]))));
+        // console.log(entries);
+    }
+    else {
+        // sortResults(entries, "loss");
+        console.log((entries[dataset].sort((a, b) => parseFloat(a["loss"]) - parseFloat(b["loss"]))));
+        // console.log(entries);
+    }
+
+
+
+    console.log(entries)
+    console.log(dataset)
+    console.log(index)
+    const theCorrespondingEntry = entries[dataset][index];
+    // console.log(entries[dataset][0])
+    // console.log(theCorrespondingEntry)
+
+    const resultsContainer = document.getElementById('results-container');
+    const resultDiv = document.createElement('div');
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    // Handling for hyperparameters
+    let hyperparameters_str = "";
+    const hyperparameters_obj = theCorrespondingEntry["hyperparameters"];
+    if (Object.keys(hyperparameters_obj).length === 0) {
+        hyperparameters_str = "None specified";
+    } else {
+        for (const [key, value] of Object.entries(hyperparameters_obj)) {
+            hyperparameters_str += `${key}: ${value} \n`;
+        }
+    }
+
+    // Build HTML with the entry details
+    const detailsHtml = `
+        <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
+        <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
+        <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A, is regression problem'}</span></div>
+        <div class="result-detail"><strong>Loss:</strong> <span>${theCorrespondingEntry.loss || 'N/A, is a classification problem'}</span></div>
+        <div class="result-detail"><strong>Dataset:</strong> <span>${theCorrespondingEntry.dataset}</span></div>
+        <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
+        <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
+        <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
+    `;
+
+    resultDiv.innerHTML = detailsHtml;
+    resultsContainer.appendChild(resultDiv);
+    showSection('results-display'); // Assuming there's a function to display the results section
+}
+
+
+function loadDBtoLocalStorage() {
+    db.allDocs({ include_docs: true })
+        .then(function (result) {
+            // Iterate over each document and log its contents
+            const entries = {};
+            entries["Boston"] = [];
+            entries["Wine"] = [];
+            entries["Titanic"] = [];
+            result.rows.forEach(function(row){
+                const entry = row.doc;
+                if(entry.dataset === "Boston Housing Dataset"){
+                    entries["Boston"].push(entry);
+                }
+                if(entry.dataset === "Wine Quality Dataset"){
+                    entries["Wine"].push(entry);
+                }
+                if(entry.dataset === "Titanic Dataset"){
+                    entries["Titanic"].push(entry);
+                }
+            })
+            
+
+            localStorage.setItem('entries', JSON.stringify(entries));
+
+            console.log(JSON.parse(localStorage.getItem('entries')));
+
+            console.log(JSON.parse(localStorage.getItem('entries'))["Boston"][0]);
+
+        })
+        .catch(function (error) {
+            console.error('Error retrieving documents from the database:', error);
+        });
 }
 
 
@@ -502,5 +721,56 @@ function loadEntryDetails(index) {
 window.onload = set_up;
 
 // db content which is logged is unavaiable after page reload (like when form is submitted)
+// window.addEventListener('load', logAllContents);
+
+window.addEventListener('load', function(){
+    this.document.getElementById('dataset-select').value = "boston";
+    this.document.getElementById('test-accuracy-container').style.display = 'none';
+});
+
+// Hide buttons and features that are not relevant to the current dataset
+document.getElementById('dataset-select').addEventListener('change', function(){
+    var selectedDataset = this.value;
+
+    // hide the test accuracy container and linear regression model option because titanic is a classification dataset
+    if(selectedDataset == "titanic"){
+        document.getElementById('lg-button').style.display = 'none';
+        document.getElementById('dt-button').style.display = 'block';
+        document.getElementById('nn-button').style.display = 'block';
+        document.getElementById('test-accuracy-container').style.display = 'block';
+        document.getElementById('loss-container').style.display = 'none';
+        document.getElementById('dt-button').click();
+    }
+
+    if(selectedDataset == "wine" || selectedDataset == "boston"){
+        document.getElementById('lg-button').style.display = 'block';
+        document.getElementById('dt-button').style.display = 'block';
+        document.getElementById('nn-button').style.display = 'block';
+        document.getElementById('loss-container').style.display = 'block';
+        document.getElementById('test-accuracy-container').style.display = 'none';
+
+    }
+})
+
+document.getElementById('dataset-dropdown').addEventListener('change', function(){
+    var selectedDataset = this.value;
+
+    if(selectedDataset === "dataset1"){
+        populateLeaderboardFromLocalStorage("Boston");
+    }
+    else if(selectedDataset === "dataset2"){
+        populateLeaderboardFromLocalStorage("Wine");
+    }
+    else if(selectedDataset === "dataset3"){
+        populateLeaderboardFromLocalStorage("Titanic");
+    }
+    else{
+        populateLeaderboard();
+    }
+});
+
 window.addEventListener('load', populateLeaderboard);
 window.addEventListener('load', loadEntryDetails);
+window.addEventListener('load', loadDBtoLocalStorage);
+// window.addEventListener('load', clearDatabase);
+

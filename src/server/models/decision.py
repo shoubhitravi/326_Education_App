@@ -1,4 +1,4 @@
-from sklearn.datasets import load_boston
+
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, mean_squared_error
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
@@ -21,13 +21,16 @@ def load_data(file_path):
 
     df_imputed = df_numeric.fillna(df_numeric.mean())
 
-    if file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/titanic.csv':
+    # if file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/titanic.csv':
+    if file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/titanic.csv":
         X = df_imputed.drop(columns=['Survived'])
         y = df_imputed['Survived']
-    elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/boston.csv'):
+    # elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/boston.csv'):
+    elif(file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/boston.csv"):
         X = df_imputed.drop(columns=['MEDV'])
         y = df_imputed['MEDV']
-    elif file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv':
+    # elif file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv':
+    elif(file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/WineQT.csv"):
         X = df_imputed.drop(columns=['quality'])
         y = df_imputed['quality']
 
@@ -39,7 +42,7 @@ def train_model(X_train, y_train, criterion='gini', splitter='best', max_depth=N
     if (classification):
         model = DecisionTreeClassifier(criterion=criterion, splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split)
     else:
-        model = DecisionTreeRegressor(criterion='mse', splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split)
+        model = DecisionTreeRegressor(criterion='squared_error', splitter=splitter, max_depth=max_depth, min_samples_split=min_samples_split)
     model.fit(X_train, y_train)
 
 
@@ -84,7 +87,7 @@ def generate_learning_curve(X_train, y_train, X_val, y_val, model, title, ylabel
         val_score = accuracy_score(y_val, val_pred) if isinstance(model, DecisionTreeClassifier) else mean_squared_error(y_val, val_pred)
         val_scores.append([val_score])  # Append the score as a list
 
-    plot_learning_curve(train_sizes, np.array(train_scores), np.array(val_scores), title, ylabel)
+    # plot_learning_curve(train_sizes, np.array(train_scores), np.array(val_scores), title, ylabel)
     return train_scores, val_scores, train_sizes
 
 
@@ -117,7 +120,8 @@ def build_decision_tree(X_train, y_train, criterion='gini', splitter='best', max
 
 if __name__ == "__main__":
     # Example usage:
-    file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
+    # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
+    file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/WineQT.csv"
     
     # get arguments
     inputs = json.loads(sys.argv[1])
@@ -128,11 +132,14 @@ if __name__ == "__main__":
     classification = (dataset == "Titanic Dataset")
 
     if (dataset == "Boston Housing Dataset"):
-        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/boston.csv'
+        # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv'
+        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/boston.csv"
     elif (dataset == "Wine Quality Dataset"):
-        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
+        # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
+        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/WineQT.csv"
     else:
-        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/titanic.csv'
+        # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/titanic.csv'
+        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/titanic.csv"
 
     X_train, y_train, X_test, y_test = load_data(file_path)
 

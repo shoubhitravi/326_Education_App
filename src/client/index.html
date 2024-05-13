@@ -78,6 +78,7 @@
                     <h2>Model Details:</h2>
                     <p>Model Type: <span id="model-type-span"></span></p>
                     <p>Test Accuracy: <span id="accuracy-span"></span></p>
+                    <p>Loss: <span id ="loss-span"></span></p>
                     <p>Dataset: <span id="dataset-span"></span></p>
                     <p>Model Hyperparameters: <span id="hyperparameters-span"></span></p>
 
@@ -123,6 +124,8 @@
             </div>
         </div>
     </div>
+
+    
     
 
     <div id="datasets" class="content" style="display: none;">
@@ -166,7 +169,8 @@
             <h1>ML Squared</h1>
             <div class="feature-selection">
                 <h2>Select Dataset</h2>
-                <select id="dataset-select" onchange="showFeatures(this.value)">
+                <!-- <select id="dataset-select" onchange="showFeatures(this.value)"> -->
+                <select id = "dataset-select">
                     <option value="boston">Boston Housing Dataset</option>
                     <option value="wine">Wine Quality Dataset</option>
                     <option value="titanic">Titanic Dataset</option>
@@ -177,9 +181,9 @@
         <div class="model-selection">
             <h2>Model Type</h2>
             <div class="model-buttons">
-                <button class="btn" onclick="showModel('linear')">Linear Regression</button>
-                <button class="btn" onclick="showModel('decision')">Decision Tree</button>
-                <button class="btn" onclick="showModel('neural')">Neural Network</button>
+                <button id = "lg-button" class="btn" onclick="showModel('linear')">Linear Regression</button>
+                <button id = "dt-button" class="btn" onclick="showModel('decision')">Decision Tree</button>
+                <button id = "nn-button" class="btn" onclick="showModel('neural')">Neural Network</button>
             </div>
         </div>
 
@@ -217,7 +221,7 @@
             </div>
             <div class="parameter">
                 <label for="max-depth">Max Depth:</label>
-                <input type="number" id="max-depth" value="None">
+                <input type="number" id="max-depth" value="1">
             </div>
             <div class="parameter">
                 <label for="min-samples-split">Min Samples Split:</label>
@@ -249,47 +253,47 @@
             </div>
         </div>
 
-        <div id="boston-features" class="feature-set hidden">
-            <h2>Boston Housing Dataset Features</h2>
-            <h3>Select Features</h3>
+        <!-- <div id="boston-features" class="feature-set hidden"> -->
+            <!-- <h2>Boston Housing Dataset Features</h2> -->
+            <!-- <h3>Select Features</h3> -->
             <!-- Features for Boston Housing Dataset -->
-            <div class="checkbox-label">
-                <input type="checkbox" id="feature-crim">
-                <label for="feature-crim">Per capita crime rate by town</label>
-            </div>
-            <div class="checkbox-label">
-                <input type="checkbox" id="feature-zn">
-                <label for="feature-zn">Proportion of residential land zoned for lots over 25,000 sq.ft.</label>
-            </div>
-        </div>
-
-        <div id="wine-features" class="feature-set hidden">
-            <h2>Wine Quality Dataset Features</h2>
-            <h3>Select Features</h3>
+            <!-- <div class="checkbox-label"> -->
+                <!-- <input type="checkbox" id="feature-crim"> -->
+                <!-- <label for="feature-crim">Per capita crime rate by town</label> -->
+            <!-- </div> -->
+            <!-- <div class="checkbox-label"> -->
+                <!-- <input type="checkbox" id="feature-zn"> -->
+                <!-- <label for="feature-zn">Proportion of residential land zoned for lots over 25,000 sq.ft.</label> -->
+            <!-- </div> -->
+        <!-- </div> -->
+        
+        <!-- <div id="wine-features" class="feature-set hidden"> -->
+            <!-- <h2>Wine Quality Dataset Features</h2> -->
+            <!-- <h3>Select Features</h3> -->
             <!-- Features for Wine Quality Dataset -->
-            <div class="checkbox-label">
-                <input type="checkbox" id="feature-fixed-acidity">
-                <label for="feature-fixed-acidity">Fixed acidity</label>
-            </div>
-            <div class="checkbox-label">
-                <input type="checkbox" id="feature-volatile-acidity">
-                <label for="feature-volatile-acidity">Volatile acidity</label>
-            </div>
-        </div>
-
-        <div id="titanic-features" class="feature-set hidden">
-            <h2>Titanic Dataset Features</h2>
-            <h3>Select Features</h3>
+            <!-- <div class="checkbox-label"> -->
+                <!-- <input type="checkbox" id="feature-fixed-acidity"> -->
+                <!-- <label for="feature-fixed-acidity">Fixed acidity</label> -->
+            <!-- </div> -->
+            <!-- <div class="checkbox-label"> -->
+                <!-- <input type="checkbox" id="feature-volatile-acidity"> -->
+                <!-- <label for="feature-volatile-acidity">Volatile acidity</label> -->
+            <!-- </div> -->
+        <!-- </div> -->
+        
+        <!-- <div id="titanic-features" class="feature-set hidden"> -->
+            <!-- <h2>Titanic Dataset Features</h2> -->
+            <!-- <h3>Select Features</h3> -->
             <!-- Features for Titanic Dataset -->
-            <div class="checkbox-label">
-                <input type="checkbox" id="feature-pclass">
-                <label for="feature-pclass">Passenger class</label>
-            </div>
-            <div class="checkbox-label">
-                <input type="checkbox" id="feature-age">
-                <label for="feature-age">Age</label>
-            </div>
-        </div>
+            <!-- <div class="checkbox-label"> -->
+                <!-- <input type="checkbox" id="feature-pclass"> -->
+                <!-- <label for="feature-pclass">Passenger class</label> -->
+            <!-- </div> -->
+            <!-- <div class="checkbox-label"> -->
+                <!-- <input type="checkbox" id="feature-age"> -->
+                <!-- <label for="feature-age">Age</label> -->
+            <!-- </div> -->
+        <!-- </div> -->
 
         <div class="training-controls">
             <button class="btn" id="start-training" onclick="startTraining()">Start Training</button>
@@ -299,8 +303,8 @@
 
         <div class="results">
             <h2>Results:</h2>
-            <p>Test Accuracy: <span id="test-accuracy"></span></p>
-            <p>Loss: <span id="loss"></span></p>
+            <p id = "test-accuracy-container">Test Accuracy: <span id="test-accuracy"></span></p>
+            <p id = "loss-container">Loss: <span id="loss"></span></p>
             <div id="plotly-graph" class="graph"></div>
         </div>
 
@@ -311,9 +315,10 @@
     </div>
     <div id="leaderboard" class="content" style="display: none;">
         <select id="dataset-dropdown">
+          <option value="any">Any</option>
           <option value="dataset1">Dataset I - Boston Housing</option>
-          <option value="dataset1">Dataset II - Wine Quality</option>
-          <option value="dataset1">Dataset III - Titanic Passengers</option>
+          <option value="dataset2">Dataset II - Wine Quality</option>
+          <option value="dataset3">Dataset III - Titanic Passengers</option>
       </select>  
         <!-- Leaderboard rankings -->
     <div id="leaderboard">
