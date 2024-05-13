@@ -28,10 +28,12 @@ def load_data(file_path):
     if (file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/titanic.csv"):
         X = df_imputed.drop(columns=['Survived'])  # Exclude the target variable
         y = df_imputed['Survived']
-    elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/boston.csv'):
+    # elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/boston.csv'):
+    elif (file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/boston.csv"):
         X = df_imputed.drop(columns=['MEDV'])
         y = df_imputed['MEDV']
-    elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'):
+    # elif (file_path == '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'):
+    elif(file_path == "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/WineQT.csv"):
         X = df_imputed.drop(columns=['quality'])
         y = df_imputed['quality']
 
@@ -160,7 +162,7 @@ if __name__ == "__main__":
 
     if (dataset == "Boston Housing Dataset"):
         # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv'
-        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/housing_mod.csv"
+        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/boston.csv"
     elif (dataset == "Wine Quality Dataset"):
         # file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
         file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/WineQT.csv"

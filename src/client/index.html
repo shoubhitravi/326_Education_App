@@ -78,6 +78,7 @@
                     <h2>Model Details:</h2>
                     <p>Model Type: <span id="model-type-span"></span></p>
                     <p>Test Accuracy: <span id="accuracy-span"></span></p>
+                    <p>Loss: <span id ="loss-span"></span></p>
                     <p>Dataset: <span id="dataset-span"></span></p>
                     <p>Model Hyperparameters: <span id="hyperparameters-span"></span></p>
 
@@ -123,6 +124,8 @@
             </div>
         </div>
     </div>
+
+    
     
 
     <div id="datasets" class="content" style="display: none;">
@@ -218,7 +221,7 @@
             </div>
             <div class="parameter">
                 <label for="max-depth">Max Depth:</label>
-                <input type="number" id="max-depth" value="None">
+                <input type="number" id="max-depth" value="1">
             </div>
             <div class="parameter">
                 <label for="min-samples-split">Min Samples Split:</label>
@@ -312,9 +315,10 @@
     </div>
     <div id="leaderboard" class="content" style="display: none;">
         <select id="dataset-dropdown">
+          <option value="any">Any</option>
           <option value="dataset1">Dataset I - Boston Housing</option>
-          <option value="dataset1">Dataset II - Wine Quality</option>
-          <option value="dataset1">Dataset III - Titanic Passengers</option>
+          <option value="dataset2">Dataset II - Wine Quality</option>
+          <option value="dataset3">Dataset III - Titanic Passengers</option>
       </select>  
         <!-- Leaderboard rankings -->
     <div id="leaderboard">
