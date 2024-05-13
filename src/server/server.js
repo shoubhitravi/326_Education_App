@@ -22,13 +22,15 @@ app.post('/create_model', (req, res) => {
     let file_path = ''
     if (inputs['modelType'] === 'Linear Regression'){
         // file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/lin_reg.py'
-        file_path = "/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/lin_reg.py"
+        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/models/lin_reg.py"
     }
     else if (inputs['modelType'] === 'Decision Tree'){
-        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/decision.py'
+        // file_path = "/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/decision.py"
+        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/models/decision.py"
     }
     else {
-        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/nn.py'
+        // file_path = "/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/nn.py"
+        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/models/nn.py"
     }
 
 
