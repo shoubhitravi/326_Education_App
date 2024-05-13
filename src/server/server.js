@@ -1,15 +1,23 @@
-import express from 'express';
+
 import { spawn } from 'child_process';
-import cors from 'cors';
+import path from 'path';
+import express from 'express';
+import PouchDB from 'pouchdb';
+
+const db = new PouchDB('my_db');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = 3000;
 
 app.use(express.json());
 
-app.use(cors({
-    origin: 'http://127.0.0.1:3001'
-}));
+const clientPath = path.resolve('../client');
+app.use(express.static(clientPath));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(clientPath, 'index.html'));
+});
+
 
 
 app.post('/create_model', (req, res) => {
@@ -21,16 +29,16 @@ app.post('/create_model', (req, res) => {
 
     let file_path = ''
     if (inputs['modelType'] === 'Linear Regression'){
-        // file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/lin_reg.py'
-        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/models/lin_reg.py"
+        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/lin_reg.py'
+        // file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/models/lin_reg.py"
     }
     else if (inputs['modelType'] === 'Decision Tree'){
-        // file_path = "/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/decision.py"
-        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/models/decision.py"
+        file_path = "/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/decision.py"
+        // file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/models/decision.py"
     }
     else {
-        // file_path = "/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/nn.py"
-        file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/models/nn.py"
+        file_path = "/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/models/nn.py"
+        // file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/models/nn.py"
     }
 
 
@@ -55,6 +63,7 @@ app.post('/create_model', (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
 });
