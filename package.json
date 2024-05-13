@@ -44,6 +44,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "path": "^0.12.7",
     "pouchdb": "^8.0.1"
   }
 }

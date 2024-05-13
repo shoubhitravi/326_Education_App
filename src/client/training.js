@@ -98,6 +98,8 @@ function showFeatures() {
 function startTraining() {
 
     const inputs = extractHyperparameters();
+    console.log("inputs = ")
+    console.log(inputs);
     const modelType = inputs["modelType"];
 
     fetch('http://localhost:3000/create_model', { // Replace with your backend server URL
@@ -407,6 +409,7 @@ function storeInputsInDB(inputs) {
     const uniqueId = Date.now().toString();
 
     const doc = { _id: uniqueId, ...inputs }
+
 
     return db.put(doc);
 }
