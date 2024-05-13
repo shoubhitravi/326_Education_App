@@ -7,6 +7,7 @@ MLSquared offers three interesting datasets, a training module that encourages u
 ## Project Structure
 
 Below is an overview of the key directories and files within the ML Squared project repository:
+```
 
 /326_EDUCATION_APP
 │
@@ -48,3 +49,5 @@ Below is an overview of the key directories and files within the ML Squared proj
 ├── package.json             # NPM package and dependency definitions
 ├── package-lock.json        # Locked versions of the package dependencies
 └── README.md                # Project documentation
+
+```
