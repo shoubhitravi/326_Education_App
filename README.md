@@ -62,7 +62,7 @@ To get the ML Squared platform running locally, follow these steps:
 
 ### Installation
 
-1. Clone the repository
+#### 1. Clone the repository
 
 ```
 git clone https://github.com/yourusername/326_EDUCATION_APP.git
@@ -70,7 +70,7 @@ cd 326_EDUCATION_APP
 
 ```
 
-2. Install dependencies
+#### 2. Install dependencies
 
 ```
 npm install
@@ -119,7 +119,7 @@ import pandas as pd
 ```
 
 
-3. Change file paths
+#### 3. Change file paths
 
 You will need to change the file paths in `server.js`, and in all Python files in the `models` directory. 
 
@@ -140,7 +140,7 @@ For example:
 /Users/yourName/Downloads/MLSquared/src/server/data/titanic.csv
 ```
 
-3. Start the server
+#### 4. Start the server
 
 Navigate to `src`, then the `server` directory. Start the server:
 
@@ -150,7 +150,7 @@ node --experimental-modules server.js
 
 This will run the development server on `http://localhost:3000/`. 
 
-4. Open MLSquared on your browser
+#### 5. Open MLSquared on your browser
 
 Navigate to `http://localhost:3000/` on your preferred web browser. 
 
