@@ -2,7 +2,7 @@
 
 /**
  * Sets up the initial display state of various divs and populates input fields based on
- * previously saved data in local storage.
+ * previously saved data in local storage. This function is triggered on window load.
  */
 function set_up() {
 
@@ -74,7 +74,8 @@ function showModel(modelType) {
 }
 
 /**
- * Displays the features related to the selected dataset.
+ * Displays the features related to the selected dataset. This function determines which feature sets
+ * to show based on the dataset selected in the dropdown.
  */
 function showFeatures() {
     // Hide all feature sets
@@ -93,7 +94,8 @@ function showFeatures() {
 
 /**
  * Simulates the training process, updates the graph with random loss values, and displays
- * random test accuracy and loss on the webpage.
+ * random test accuracy and loss on the webpage. It interacts with a backend server to create a model
+ * and retrieve simulation data.
  */
 function startTraining() {
 
@@ -202,7 +204,11 @@ function startTraining() {
 }
 
 
-// Display model data (dataset, model type, test accuracy, hyperparameters) on share page form
+
+/**
+ * Displays model data (dataset, model type, test accuracy, hyperparameters) on a share page form
+ * based on the data stored in local storage.
+ */
 function displayModelData() {
     const inputs = JSON.parse(localStorage.getItem('inputs'));
     const datasetSpan = document.getElementById("dataset-span");
@@ -225,34 +231,8 @@ function displayModelData() {
     else {
         lossSpan.textContent = inputs["loss"];
     }
-    // console.log(inputs["dataset"])
 
-    // Hyperparameters: 
-    /*
-    // Linear Regression Hyperparameters:
-    // Learning rate, number of iterations, regularization
-
-    // Decision Tree Hyperparameters:
-    // Criterion, Splitter, Max Depth, Min Samples Split
-
-    // Neural Network Hyperparameters:
-    // Number of hidden layers, neurons per layer, activation function, learning rate
-
-    */
-
-    // Dataset Features
-    /*
-
-    // Boston Housing 
-    // Per capita crime rate by town, proportion of residential land zoned for lots over 25,000 sq. ft.
-
-    // Wine Quality
-    // Fixed acidity, volatile acidity
-
-    // Titanic
-    // Passenger class, age
-
-    */
+   
     const hyperparameters = inputs["hyperparameters"];
 
     // console.log(JSON.stringify(hyperparameters));
@@ -272,14 +252,12 @@ function displayModelData() {
 }
 
 
+
 /**
  * Extracts inputs from the user form, including selected dataset, hyperparameters, and features,
  * stores them in local storage and a PouchDB database, and logs them to the console.
- *
  * @returns {Object} The inputs extracted from the form elements.
  */
-
-
 function extractHyperparameters(){
     const hyperparameters = {}
 
@@ -304,6 +282,14 @@ function extractHyperparameters(){
     return hyperparameters;
 }
 
+
+
+
+/**
+ * Extracts inputs from the user form, including selected dataset, hyperparameters, and features,
+ * and updates local storage with this data.
+ * @returns {Object} The inputs extracted from the form elements.
+ */
 function extractInputs() {
     const inputs = {};
 
@@ -349,30 +335,21 @@ function extractInputs() {
     );
     inputs["comments"] = [];
 
-    // // Extract Loss
-    // document.querySelectorAll(".results").forEach(function (input) {
-    //     if (input.offsetParent !== null) {
-    //         inputs["loss"] = input.querySelector("#loss").textContent;
-    //     }
-    // }
-    // );
-
+  
     // Store in local storage and PouchDB
     localStorage.setItem('inputs', JSON.stringify(inputs));
-    // clear database script
-    // db.destroy().then(function() {
-    //     console.log("database cleared successfully");
-    // }).catch
-    // (function(err) {
-    //     console.log("error: ", err);
-    // });
 
-    // storeInputsInDB(inputs);
-    // logAllContents();
     return inputs;
 }
 
 
+
+
+/**
+ * Extracts and updates additional result information including user name, model tuning, and improvement notes,
+ * and stores them in local storage.
+ * @returns {Object} The inputs including additional details like user name and tuning methods.
+ */
 function extractResultInfo() {
     const inputs = JSON.parse(localStorage.getItem('inputs'));
     // console.log(inputs);
@@ -398,17 +375,17 @@ function extractResultInfo() {
     return inputs;
 }
 
+
 // model submissions dataset
 const db = new PouchDB('model_db');
 // console.log(JSON.parse(localStorage.getItem('inputs')))
 
 
-// /**
-//  * Stores the provided input data in a PouchDB database with a unique timestamp as the ID.
-//  *
-//  * @param {Object} inputs - The inputs to store in the database.
-//  * @returns {Promise} A promise that resolves with the response from the database operation.
-//  */
+/**
+ * Stores the provided input data in a PouchDB database with a unique timestamp as the ID.
+ * @param {Object} inputs - The inputs to store in the database.
+ * @returns {Promise} A promise that resolves with the response from the database operation.
+ */
 function storeInputsInDB(inputs) {
     const uniqueId = Date.now().toString();
     const doc = { _id: uniqueId, ...inputs }
@@ -434,6 +411,12 @@ function storeInputsInDB(inputs) {
         });
 }
 
+
+
+
+/**
+ * Retrieves all documents from the PouchDB database and processes them to update or populate the leaderboard.
+ */
 function getAllDocs() {
     return fetch('/all_docs')
       .then(response => {
@@ -456,6 +439,11 @@ function getAllDocs() {
 
 
 
+
+/**
+ * Sorts the results by accuracy in descending order.
+ * @param {Array} results - The array of results to sort.
+ */    
 function sortResultsByAccuracy(results) {
     results.sort(function(a, b) {
         // Ensure both values are treated as numbers
@@ -465,6 +453,11 @@ function sortResultsByAccuracy(results) {
 
 
 
+
+/**
+ * Populates the leaderboard by retrieving all documents from the database and creating HTML elements
+ * to display each entry.
+ */
 function populateLeaderboard() {
     // Retrieve all documents from the database
     getAllDocs()
@@ -509,6 +502,12 @@ function populateLeaderboard() {
 }
 
 
+
+
+/**
+ * Populates the leaderboard based on the dataset specified and the entries stored in local storage.
+ * @param {string} dataset - The dataset to filter entries by.
+ */
 function populateLeaderboardFromLocalStorage(dataset) {
     let entries = JSON.parse(localStorage.getItem('entries'))[dataset];
     console.log(entries);
@@ -559,6 +558,12 @@ function populateLeaderboardFromLocalStorage(dataset) {
 }
 
 
+
+
+/**
+ * Loads and displays the details of a specific entry based on the provided index.
+ * @param {number} index - The index of the entry to load from the database.
+ */
 function loadEntryDetails(index) {
     getAllDocs()
         .then(function (result) {    
@@ -622,6 +627,16 @@ function loadEntryDetails(index) {
     });
 }
 
+
+
+
+
+
+/**
+ * Loads and displays the details of a specific entry by dataset and index from local storage.
+ * @param {string} dataset - The dataset to filter entries by.
+ * @anshul {number} index - The index of the entry within the dataset to load.
+ */
 function loadEntryDetailsByDataset(dataset, index) {
     // Retrieve the stored JSON string from localStorage
     const storedEntries = localStorage.getItem('entries');
@@ -708,6 +723,19 @@ function loadEntryDetailsByDataset(dataset, index) {
     showSection('results-display'); // Assuming there's a function to display the results section
 }
 
+
+
+
+
+
+
+
+
+/**
+ * Adds a comment to a specific entry and updates both the local storage and backend server.
+ * @param {string} dataset - The dataset the entry belongs to.
+ * @param {string} entry_id - The ID of the entry to which the comment is being added.
+ */
 function addCommentToCurrentEntry(dataset, entry_id) {
 
 
@@ -769,11 +797,14 @@ function addCommentToCurrentEntry(dataset, entry_id) {
 
 }
 
-function updateComment(id, comments){
-
-}
 
 
+
+
+
+/**
+ * Loads all documents from the database to local storage, organizing them by dataset.
+ */
 function loadDBtoLocalStorage() {
     console.log("load db to local storage");
     getAllDocs()
@@ -809,6 +840,14 @@ function loadDBtoLocalStorage() {
         });
 }
 
+
+
+
+
+/**
+ * Deletes an entry from the database using its ID.
+ * @param {string} input - The ID of the entry to delete.
+ */
 async function deleteEntry(input) {
     try {
       const response = await fetch('/delete_entry', {
@@ -831,6 +870,13 @@ async function deleteEntry(input) {
 
 
 
+
+
+
+
+/**
+ * Event listeners and other configurations that are set on window load.
+ */
 window.onload = set_up;
 
 window.addEventListener('load', function(){
@@ -838,6 +884,13 @@ window.addEventListener('load', function(){
     this.document.getElementById('test-accuracy-container').style.display = 'none';
 });
 
+
+
+
+
+/**
+ * Additional configuration and event listeners for handling dataset changes.
+ */
 // Hide buttons and features that are not relevant to the current dataset
 document.getElementById('dataset-select').addEventListener('change', function(){
     var selectedDataset = this.value;
@@ -881,3 +934,32 @@ document.getElementById('dataset-dropdown').addEventListener('change', function(
 window.addEventListener('load', populateLeaderboard);
 window.addEventListener('load', loadDBtoLocalStorage);
 // window.addEventListener('load', clearDatabase);
+
+
+
+ // Hyperparameters: 
+    /*
+    // Linear Regression Hyperparameters:
+    // Learning rate, number of iterations, regularization
+
+    // Decision Tree Hyperparameters:
+    // Criterion, Splitter, Max Depth, Min Samples Split
+
+    // Neural Network Hyperparameters:
+    // Number of hidden layers, neurons per layer, activation function, learning rate
+
+    */
+
+    // Dataset Features
+    /*
+
+    // Boston Housing 
+    // Per capita crime rate by town, proportion of residential land zoned for lots over 25,000 sq. ft.
+
+    // Wine Quality
+    // Fixed acidity, volatile acidity
+
+    // Titanic
+    // Passenger class, age
+
+    */

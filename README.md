@@ -16,7 +16,6 @@ Below is an overview of the key directories and files within the ML Squared proj
 │
 ├── src                      # Source files for the application
 │   ├── client               # Client-side code
-│   │   ├── db.js            # Database interaction scripts
 │   │   ├── github.txt       # GitHub configuration (likely should be .gitignored)
 │   │   ├── index.html       # Main HTML document
 │   │   ├── script.js        # Client-side JavaScript
