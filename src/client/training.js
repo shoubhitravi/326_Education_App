@@ -345,7 +345,9 @@ function extractInputs() {
             }
         }
     }
+    
     );
+    inputs["comments"] = [];
 
     // // Extract Loss
     // document.querySelectorAll(".results").forEach(function (input) {
@@ -399,35 +401,60 @@ function extractResultInfo() {
 // model submissions dataset
 const db = new PouchDB('model_db');
 // console.log(JSON.parse(localStorage.getItem('inputs')))
-/**
- * Stores the provided input data in a PouchDB database with a unique timestamp as the ID.
- *
- * @param {Object} inputs - The inputs to store in the database.
- * @returns {Promise} A promise that resolves with the response from the database operation.
- */
+
+
+// /**
+//  * Stores the provided input data in a PouchDB database with a unique timestamp as the ID.
+//  *
+//  * @param {Object} inputs - The inputs to store in the database.
+//  * @returns {Promise} A promise that resolves with the response from the database operation.
+//  */
 function storeInputsInDB(inputs) {
     const uniqueId = Date.now().toString();
-
     const doc = { _id: uniqueId, ...inputs }
 
+    const requestOptions = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(doc)
+    };
 
-    return db.put(doc);
-}
-
-function clearDatabase() {
-    db.allDocs()
-        .then(result => {
-            return Promise.all(result.rows.map(row => {
-                return db.remove(row.id, row.value.rev);
-            }));
+    fetch('/store_inputs', requestOptions)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
         })
-        .then(() => {
-            console.log('All documents successfully deleted');
+        .then(data => {
+            console.log('Data received from server:', data);
         })
-        .catch(err => {
-            console.error('Error deleting documents', err);
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error.message);
         });
 }
+
+function getAllDocs() {
+    return fetch('/all_docs')
+      .then(response => {
+        if (!response.ok) {
+          console.log("error!!!");
+          throw new Error('Network response was not ok');
+        }
+        console.log(response);
+        return response.json();
+      })
+      .then(docs => {
+        // Process the retrieved documents
+        console.log('Retrieved documents:', docs);
+        return docs; // You can handle the documents here, e.g., update the leaderboard
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error.message);
+      });
+    }
+
+
 
 function sortResultsByAccuracy(results) {
     results.sort(function(a, b) {
@@ -435,15 +462,17 @@ function sortResultsByAccuracy(results) {
         return parseFloat(b.doc.testAccuracy) - parseFloat(a.doc.testAccuracy); // Sorting in descending order
     });
 }
-/**
- * Logs all contents of the PouchDB database to the console.
- */
+
+
+
 function populateLeaderboard() {
     // Retrieve all documents from the database
-    db.allDocs({ include_docs: true })
+    getAllDocs()
         .then(function (result) {
             // Iterate over each document and log its contents
             // sortResultsByAccuracy(result.rows);
+            console.log("populate leaderboard");
+            console.log(result)
             const leaderboardContainer = document.getElementById('leaderboard');
 
             // clear leaderboard entries
@@ -452,20 +481,20 @@ function populateLeaderboard() {
                 entry.parentNode.removeChild(entry);
             });
 
-            result.rows.forEach(function (row, index) {
+            result.forEach(function (row, index) {
                 // console.log(row.doc); 
+                console.log(row);
                 const entryDiv = document.createElement('div');
                 entryDiv.classList.add('leaderboard-entry');
-                let result = "Accuracy: " + parseFloat(row.doc.testAccuracy).toFixed(2);
-                if (row.doc.testAccuracy === ""){
-                    result = "Loss: " + parseFloat(row.doc.loss).toFixed(2);
+                let result = "Accuracy: " + parseFloat(row["testAccuracy"]).toFixed(2);
+                if (row["testAccuracy"] === ""){
+                    result = "Loss: " + parseFloat(row["loss"]).toFixed(2);
                 }          
 
-                const dataset = row.doc.dataset;
                 entryDiv.innerHTML = `
                     <div class="rank">${index + 1}</div>
-                    <div class="name">${row.doc.name}</div>
-                    <div class="model-type">${row.doc.modelType}</div>
+                    <div class="name">${row["name"]}</div>
+                    <div class="model-type">${row["modelType"]}</div>
                     <div class="results">${result}</div>
                     <div class="link">
                         <button onclick="showSection('results-display');  loadEntryDetails(${index})">➡️</button>
@@ -531,16 +560,15 @@ function populateLeaderboardFromLocalStorage(dataset) {
 
 
 function loadEntryDetails(index) {
-    db.allDocs({ include_docs: true })
+    getAllDocs()
         .then(function (result) {    
         const resultsContainer = document.getElementById('results-container');
         const resultDiv = document.createElement('div');
         resultsContainer.innerHTML = '';
-        // console.log(result.rows[index].doc)
-        // console.log(result.rows[index]);
-        // console.log(result.rows);
-
-        let theCorrespondingEntry = result.rows[index].doc
+        console.log(index);
+        console.log("loadEntryDetails");
+        console.log(result);
+        let theCorrespondingEntry = result[index]
         
 
         console.log("corresponing entry: ")
@@ -562,6 +590,7 @@ function loadEntryDetails(index) {
 
         const detailsHtml = `
                 <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
+                <div class="result-detail"><strong>EntryID:</strong> <span>${theCorrespondingEntry._id}</span></div>
                 <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
                 <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A, is regression problem'}</span></div>
                 <div class="result-detail"><strong>Loss:</strong> <span>${theCorrespondingEntry.loss || 'N/A, is a classification problem'}</span></div>
@@ -569,6 +598,20 @@ function loadEntryDetails(index) {
                 <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
                 <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
                 <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
+                <div class="result-detail">
+                    <strong>Comments:</strong> <span id="comments-list">${theCorrespondingEntry.comments}</span>
+                    <div id="comments-section">
+                    <h2>Comments</h2>
+                    <ul id="comments-list">
+                        <!-- Comments will be displayed here -->
+                    </ul>
+                    <form id="comment-form">
+                        <textarea id="comment-input" placeholder="Add a comment..." required></textarea>
+                        <button type="submit" class = "submit-btn" onclick = "addCommentToCurrentEntry('${theCorrespondingEntry.dataset}', '${theCorrespondingEntry._id}')">Post Comment</button>
+                    </form>
+                    </div>
+                </div>
+                <button class="delete-btn" onclick="deleteEntry('${theCorrespondingEntry._id}')">Delete Entry</button>
             `;
 
             resultDiv.innerHTML = detailsHtml;
@@ -636,6 +679,7 @@ function loadEntryDetailsByDataset(dataset, index) {
     // Build HTML with the entry details
     const detailsHtml = `
         <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
+        <div class="result-detail"><strong>EntryID:</strong> <span>${theCorrespondingEntry._id}</span></div>
         <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
         <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A, is regression problem'}</span></div>
         <div class="result-detail"><strong>Loss:</strong> <span>${theCorrespondingEntry.loss || 'N/A, is a classification problem'}</span></div>
@@ -643,6 +687,20 @@ function loadEntryDetailsByDataset(dataset, index) {
         <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
         <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
         <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
+        <div class="result-detail">
+            <strong>Comments:</strong> <span id="comments-list">${theCorrespondingEntry.comments}</span>
+            <div id="comments-section">
+            <h2>Comments</h2>
+            <ul id="comments-list">
+                <!-- Comments will be displayed here -->
+            </ul>
+            <form id="comment-form">
+                <textarea id="comment-input" placeholder="Add a comment..." required></textarea>
+                <button type="submit" class = "submit-btn" onclick = "addCommentToCurrentEntry('${theCorrespondingEntry.dataset}', '${theCorrespondingEntry._id}')">Post Comment</button>
+            </form>
+            </div>
+        </div>
+        <button class="delete-btn" onclick="deleteEntry('${theCorrespondingEntry._id}')">Delete Entry</button>
     `;
 
     resultDiv.innerHTML = detailsHtml;
@@ -650,17 +708,83 @@ function loadEntryDetailsByDataset(dataset, index) {
     showSection('results-display'); // Assuming there's a function to display the results section
 }
 
+function addCommentToCurrentEntry(dataset, entry_id) {
+
+
+    const commentInput = document.getElementById('comment-input');
+    const comment = commentInput.value;
+
+    if(dataset === "Titanic Dataset"){
+        dataset = "Titanic";
+    }
+    else if(dataset === "Boston Housing Dataset"){
+        dataset = "Boston";
+    }
+    else if(dataset === "Wine Quality Dataset"){
+        dataset = "Wine";
+    }
+
+
+    const entries = JSON.parse(localStorage.getItem('entries'));
+    const entriesArray = entries[dataset];
+    for(const entry of entriesArray){
+        if(entry._id === entry_id){
+            if(entry.comments === undefined){
+                entry.comments = [];
+            }
+            console.log(entry)
+            entry.comments.push(comment);
+
+            document.getElementById("comments-list").innerHTML = entry.comments.map(comment => `${comment}<br>`).join('');
+
+            const comments = entry.comments;
+            const id = entry._id;
+
+            
+            fetch('/update_comments', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id, comments })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return Promise.reject(new Error(response.statusText));
+                }
+                return response;
+            });
+            
+
+
+
+        }
+    }
+
+    localStorage.setItem('entries', JSON.stringify(entries));
+    
+    commentInput.value = '';
+
+
+
+}
+
+function updateComment(id, comments){
+
+}
+
 
 function loadDBtoLocalStorage() {
-    db.allDocs({ include_docs: true })
+    console.log("load db to local storage");
+    getAllDocs()
         .then(function (result) {
             // Iterate over each document and log its contents
             const entries = {};
             entries["Boston"] = [];
             entries["Wine"] = [];
             entries["Titanic"] = [];
-            result.rows.forEach(function(row){
-                const entry = row.doc;
+            result.forEach(function(row){
+                const entry = row;
                 if(entry.dataset === "Boston Housing Dataset"){
                     entries["Boston"].push(entry);
                 }
@@ -685,46 +809,29 @@ function loadDBtoLocalStorage() {
         });
 }
 
-
-// function loadResults() {
-//     // Fetch all documents from the database
-//     db.allDocs({ include_docs: true })
-//         .then(function (result) {
-//             // Optionally sort the results by accuracy if necessary
-//             // result.rows.sort((a, b) => (b.doc.testAccuracy || 0) - (a.doc.testAccuracy || 0));
-
-//             const resultsContainer = document.getElementById('results-display');
-
-//             // Iterate over each document and create HTML for each entry
-//             result.rows.forEach((row, index) => {
-//                 const resultDiv = document.createElement('div');
-//                 console.log("name name name" + row.doc.name);
-//                 resultDiv.innerHTML = `
-//                     <div class="rank">${index + 1}</div>
-//                     <div class="name">${row.doc.name}</div>
-//                     <div class="model-type">${row.doc.modelType}</div>
-//                     <div class="accuracy"><strong>Test Accuracy:</strong> ${row.doc.testAccuracy || 'N/A'}</div>
-//                     <div class="dataset"><strong>Dataset:</strong> ${row.doc.dataset}</div>
-//                     <div class="hyperparameters"><strong>Hyperparameters:</strong> ${row.doc.hyperparameters}</div>
-//                     <div class="tuning"><strong>Tuning:</strong> ${row.doc.modelTuning}</div>
-//                     <div class="improvements"><strong>Improvements:</strong> ${row.doc.improvement}</div>
-//                     <div class="link"><button onclick="showSection('results-display')">➡️ View Details</button></div>
-//                 `;
-
-//                 resultsContainer.appendChild(resultDiv); // Append to the correct container
-//             });
-//         })
-//         .catch(error => {
-//             console.error('Error loading results:', error);
-//         });
-// }
+async function deleteEntry(input) {
+    try {
+      const response = await fetch('/delete_entry', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ _id : input}),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+  
+      const data = await response.json();
+    } catch (error) {
+      throw new Error(`Error deleting entry: ${error.message}`);
+    }
+  }
 
 
 
 window.onload = set_up;
-
-// db content which is logged is unavaiable after page reload (like when form is submitted)
-// window.addEventListener('load', logAllContents);
 
 window.addEventListener('load', function(){
     this.document.getElementById('dataset-select').value = "boston";
@@ -751,7 +858,6 @@ document.getElementById('dataset-select').addEventListener('change', function(){
         document.getElementById('nn-button').style.display = 'block';
         document.getElementById('loss-container').style.display = 'block';
         document.getElementById('test-accuracy-container').style.display = 'none';
-
     }
 })
 
@@ -773,7 +879,5 @@ document.getElementById('dataset-dropdown').addEventListener('change', function(
 });
 
 window.addEventListener('load', populateLeaderboard);
-window.addEventListener('load', loadEntryDetails);
 window.addEventListener('load', loadDBtoLocalStorage);
 // window.addEventListener('load', clearDatabase);
-

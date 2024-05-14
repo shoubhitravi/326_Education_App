@@ -161,7 +161,7 @@ if __name__ == "__main__":
     num_hidden_layers = int(inputs["num-hidden-layers"])
 
     if (dataset == "Boston Housing Dataset"):
-        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/housing_mod.csv'
+        file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/boston.csv'
         #file_path = "/Users/shoubhitravi/Shoubhit's Documents/Semester 4/CS 326/Education_App/326_Education_App/src/server/data/boston.csv"
     elif (dataset == "Wine Quality Dataset"):
         file_path = '/Users/luketaylor/Desktop/CS326/Project/326_Education_App/src/server/data/WineQT.csv'
