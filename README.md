@@ -76,6 +76,70 @@ cd 326_EDUCATION_APP
 npm install
 ```
 
+Make sure you have python3 and that all of the needed dependencies from python are installed. You can see what is needed at the top of the four Python files:
+
+```
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, mean_squared_error
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+import json
+```
+
+```
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import pandas as pd
+import numpy as np
+import json
+import sys
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+```
+
+```
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import sys
+import json
+```
+
+```
+import pandas as pd
+```
+
+
+3. Change file paths
+
+You will need to change the file paths in `server.js`, and in all Python files in the `models` directory. 
+
+In `server.js`, on line 37, the following code accesses Python in your computer:
+
+```
+const pythonProcess = spawn('/usr/local/bin/python3', [file_path, JSON.stringify(inputs)]
+```
+
+Change `/usr/local/bin/python3` to the corresponding path for you. If you are on a Windows computer, you will need to change it. 
+
+
+Within all the Python files, search for the variable `file_path`. Change all occurrences of the path to the correct absolute path, which you can see in the terminal.
+
+For example:
+
+```
+/Users/yourName/Downloads/MLSquared/src/server/data/titanic.csv
+```
+
 3. Start the server
 
 Navigate to `src`, then the `server` directory. Start the server:

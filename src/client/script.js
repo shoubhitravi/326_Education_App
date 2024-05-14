@@ -69,3 +69,9 @@ function startJourney(){
   document.getElementById('datasets').style.display = 'block';
 
 }
+
+// function postComment(button){
+//   var container = button.closest('.result-entry');
+//    var modelId = container.getAttribute('data-model-id'); // Ensure each entry has a unique ID
+//    var commentInput = container.querySelector('#comment');
+//    var comment = commentInput.value;}

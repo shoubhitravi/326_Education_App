@@ -304,6 +304,9 @@ function extractHyperparameters(){
 
 function extractInputs() {
     const inputs = {};
+    inputs["comments"] = [];
+    console.log("comments done");
+
 
     // Extract dataset
     const datasetSelect = document.getElementById('dataset-select');
@@ -329,6 +332,7 @@ function extractInputs() {
     document.querySelectorAll('.hyperparameters').forEach(function (input) {
         if (input.offsetParent !== null) { // Check if the input is visible
             inputs["modelType"] = input.querySelector('h2').textContent.split(" ").slice(0, 2).join(" ");
+            console.log("modelType done");
         }
     });
 
@@ -343,6 +347,10 @@ function extractInputs() {
             }
         }
     }
+
+
+
+    //TODO: add empty comment array 
     );
 
     // // Extract Loss
@@ -355,6 +363,40 @@ function extractInputs() {
 
     // Store in local storage and PouchDB
     localStorage.setItem('inputs', JSON.stringify(inputs));
+
+
+
+    //TODO: wtf is this idk
+    // console.log(localStorage.getItem('entries'));
+    // console.log(selectedText);
+    // let entries;
+    // if(selectedText ==="Wine Quality Dataset"){
+    //      entries = localStorage.getItem('entries')["Wine"];
+    // }
+    // else if(selectedText === "Titanic Dataset"){
+    //      entries = localStorage.getItem('entries')["Titanic"];
+    // }
+    // else{
+    //      entries = localStorage.getItem('entries')["Boston"];
+    // }
+    // console.log("entries" + entries);
+    // if(entries===undefined){
+    //     localStorage.setItem('entries', inputs);
+    // }
+    // else{
+    //     const newEntries = entries.push(inputs);
+    //     localStorage.setItem('entries', newEntries);
+    // }
+
+
+
+
+
+
+
+
+    // const newEntries = [...entries, inputs];
+    // localStorage.setItem('entries', newEntries);
     // clear database script
     // db.destroy().then(function() {
     //     console.log("database cleared successfully");
@@ -381,9 +423,12 @@ function extractResultInfo() {
     // extract how improve 
     const improvement = document.getElementById("model-improvement-field").value;
     // console.log(improvement)
+
+    const comments = [];
     inputs["name"] = name;
     inputs["model-tuning"] = modelTuning;
     inputs["improvement"] = improvement;
+   //inputs["comments"] = comments;
 
     localStorage.setItem('inputs', JSON.stringify(inputs));
 
@@ -392,6 +437,82 @@ function extractResultInfo() {
     showSection('leaderboard')
     // logAllContents();
     return inputs;
+}
+
+function addCommentToCurrentEntry(entry_id, dataset){
+    // const entries = JSON.parse(localStorage.getItem('entries'));
+    // const comment = document.getElementById("comment").value;
+    // //const comments = document.getElementById('comments-container');
+    // const newEntries = entries.filter(entry => entry._id===eventId);
+    // newEntries.forEach(entry => entry.comments.push(comment) )
+    
+    // localStorage.setItem('entries', JSON.stringify(entries));
+    // db.put()
+
+    // //storeInputsInDB(entries);
+    // const commentsHTML = inputs.comments.map(comment => `<li>${comment}</li>`).join('');
+    // comments.innerHTML = `<ul>${commentsHTML}</ul>`;
+    // return inputs;
+    // db.allDocs({ include_docs: true })
+    //     .then(function (result) {
+            
+
+    //         result.rows.forEach(function (row, index) {
+    //             // console.log(row.doc); 
+
+    //             if(row.doc._id === entry_id){
+    //                 // console.log("found entry")
+    //                 // console.log(row.doc);
+    //                 if(row.doc.comments === undefined){
+    //                     row.doc.comments = [];
+    //                 }
+    //                 const commentInput = document.getElementById('comment-input');
+    //                 const comment = commentInput.value;
+    //                 row.doc.comments.push(comment);
+    //                 // console.log(row.doc);
+    //                 db.put(row.doc);
+    //             }   
+    //         });
+    //     })
+    //     .catch(function (error) {
+    //         console.error('Error retrieving documents from the database:', error);
+    //     });
+
+    // const commentInput = document.getElementById('comment-input');
+    // //const comment = commentInput.value;
+
+
+    if(dataset === "Titanic Dataset"){
+        dataset = "Titanic";
+    }
+    else if(dataset === "Boston Housing Dataset"){
+        dataset = "Boston";
+    }
+    else if(dataset === "Wine Quality Dataset"){
+        dataset = "Wine";
+    }
+
+
+
+    
+    const entries = JSON.parse(localStorage.getItem('entries'));
+    const entriesArray = entries[dataset];
+    for(const entry of entriesArray){
+        if(entry._id === entry_id){
+            if(entry.comments === undefined){
+                entry.comments = [];
+            }
+            console.log("entry" + entry)
+            entry.comments.push(comment);
+            document.getElementById("list-of-comments").innerHTML = entry.comments;
+        }
+    }
+
+    localStorage.setItem('entries', JSON.stringify(entries));
+    
+    commentInput.value = '';
+    //TODO: go through entries, find the right entry by entry_id, and then add the comment to that section's HTML comment section
+    
 }
 
 // model submissions dataset
@@ -409,6 +530,7 @@ function storeInputsInDB(inputs) {
     const doc = { _id: uniqueId, ...inputs }
 
     return db.put(doc);
+    
 }
 
 function clearDatabase() {
@@ -467,6 +589,7 @@ function populateLeaderboard() {
                     <div class="link">
                         <button onclick="showSection('results-display');  loadEntryDetails(${index})">➡️</button>
                     </div>
+                    
                 `;            
                 leaderboardContainer.appendChild(entryDiv);
             });
@@ -544,6 +667,8 @@ function loadEntryDetails(index) {
         console.log(theCorrespondingEntry);
         console.log("hyperparameters: ");
         console.log(theCorrespondingEntry["hyperparameters"]);
+        console.log("comments");
+        console.log(theCorrespondingEntry["comments"]);
 
         // extract hyperparameters
         const hyperparameters_obj = theCorrespondingEntry["hyperparameters"];
@@ -557,7 +682,10 @@ function loadEntryDetails(index) {
             }
         }
 
+        console.log(theCorrespondingEntry.comments);
+
         const detailsHtml = `
+                <div class="result-detail"><strong>ID:</strong> <span>${theCorrespondingEntry._id}</span></div>
                 <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
                 <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
                 <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A, is regression problem'}</span></div>
@@ -566,6 +694,19 @@ function loadEntryDetails(index) {
                 <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
                 <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
                 <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
+                <div class="result-detail">
+                <strong>Comments:</strong> <span id="list-of-comments">${theCorrespondingEntry.comments}</span>
+                <div id="comments-section">
+                <h2>Comments</h2>
+                <ul id="comments-list">
+                    <!-- Comments will be displayed here -->
+                </ul>
+                <form id="comment-form">
+                    <textarea id="comment-input" placeholder="Add a comment..." required></textarea>
+                    <button type="submit" class = "submit-btn" onclick = "addCommentToCurrentEntry('${theCorrespondingEntry.dataset}', '${theCorrespondingEntry._id}')">Post Comment</button>
+                </form>
+                </div>
+            </div>
             `;
 
             resultDiv.innerHTML = detailsHtml;
@@ -631,16 +772,44 @@ function loadEntryDetailsByDataset(dataset, index) {
     }
 
     // Build HTML with the entry details
-    const detailsHtml = `
-        <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
-        <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
-        <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A, is regression problem'}</span></div>
-        <div class="result-detail"><strong>Loss:</strong> <span>${theCorrespondingEntry.loss || 'N/A, is a classification problem'}</span></div>
-        <div class="result-detail"><strong>Dataset:</strong> <span>${theCorrespondingEntry.dataset}</span></div>
-        <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
-        <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
-        <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
-    `;
+    const detailsHtml = 
+    //TODO: make it the same exact as previous function
+    `
+                <div class="result-detail"><strong>ID:</strong> <span>${theCorrespondingEntry._id}</span></div>
+                <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
+                <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
+                <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A, is regression problem'}</span></div>
+                <div class="result-detail"><strong>Loss:</strong> <span>${theCorrespondingEntry.loss || 'N/A, is a classification problem'}</span></div>
+                <div class="result-detail"><strong>Dataset:</strong> <span>${theCorrespondingEntry.dataset}</span></div>
+                <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
+                <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
+                <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
+                <div class="result-detail">
+                <strong>Comments:</strong> <span id = "list-of-comments">${theCorrespondingEntry.comments}</span>
+                <div id="comments-section">
+                <h2>Comments</h2>
+                <ul id="comments-list">
+                    <!-- Comments will be displayed here -->
+                </ul>
+                <form id="comment-form">
+                    <textarea id="comment-input" placeholder="Add a comment..." required></textarea>
+                    <button type="submit" class = "submit-btn" onclick = "addCommentToCurrentEntry('${theCorrespondingEntry.dataset}', '${theCorrespondingEntry._id}')">Post Comment</button>
+                </form>
+                </div>
+            </div>
+            `;
+    // `
+    //     <div class="result-detail"><strong>Name:</strong> <span>${theCorrespondingEntry.name}</span></div>
+    //     <div class="result-detail"><strong>Model Type:</strong> <span>${theCorrespondingEntry.modelType}</span></div>
+    //     <div class="result-detail"><strong>Test Accuracy:</strong> <span>${theCorrespondingEntry.testAccuracy || 'N/A, is regression problem'}</span></div>
+    //     <div class="result-detail"><strong>Loss:</strong> <span>${theCorrespondingEntry.loss || 'N/A, is a classification problem'}</span></div>
+    //     <div class="result-detail"><strong>Dataset:</strong> <span>${theCorrespondingEntry.dataset}</span></div>
+    //     <div class="result-detail"><strong>Hyperparameters:</strong> <span>${hyperparameters_str}</span></div>
+    //     <div class="result-detail"><strong>Tuning:</strong> <span>${theCorrespondingEntry["model-tuning"]}</span></div>
+    //     <div class="result-detail"><strong>Improvements:</strong> <span>${theCorrespondingEntry.improvement}</span></div>
+    //     <div class="result-detail><strong>Comments:</strong> <span>${theCorrespondingEntry["comments"]}</span></div>
+
+    // `;
 
     resultDiv.innerHTML = detailsHtml;
     resultsContainer.appendChild(resultDiv);
